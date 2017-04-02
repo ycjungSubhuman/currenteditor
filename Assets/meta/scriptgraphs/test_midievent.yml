@@ -1,0 +1,30 @@
+# A test script graph
+# When channel 9 is 'ON', the object should move toward (1, 1, 1).
+- name: eventnode1
+  base: ClipMidiEvent
+  params:
+    ClipName: testclip1
+  position:
+    x: 20
+    y: 20
+  succ:
+    - dest: testnode1
+      type: external
+      endprev: true
+      condition: ""
+      datalink: null
+- name: testnode1
+  base: MoveConstant
+  params:
+    TargetName: TestObject1
+    TargetTag:
+      - TestTag1
+    Velocity:
+      x: 0.01
+      y: 0.01
+      z: 0.01
+    Duration: 0
+  position:
+    x: 20
+    y: 20
+  succ: null

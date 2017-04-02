@@ -1,0 +1,5 @@
+# overall structure of a Current project
+scriptgraphs:
+  testgraph1: testgraph1.yml
+clips:
+  testclip1: testclip1.yml
