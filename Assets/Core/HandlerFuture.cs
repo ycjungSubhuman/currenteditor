@@ -14,14 +14,17 @@ namespace Assets.Core
         private Params initialParams = Params.Empty;
         private HandlerFuture nextHandler;
 
-        /** Param Initializer */
-        protected abstract Dictionary<String, object> OnRequestInitialParamMap();
+        /** Default Param Initializer */
+        protected abstract Dictionary<String, object> OnRequestDefaultParamMap();
 
-        public HandlerFuture()
+        public HandlerFuture(Params ps)
         {
-            foreach (KeyValuePair<String, object> pair in OnRequestInitialParamMap())
+            foreach (KeyValuePair<String, object> pair in OnRequestDefaultParamMap())
             {
-                initialParams.Add<object>(pair.Key, pair.Value);
+                if(ps.ContainsKey(pair.Key))
+                    initialParams.Add(pair.Key, ps.Get<object>(pair.Key));
+                else 
+                    initialParams.Add(pair.Key, pair.Value);
             }
         }
 
@@ -30,9 +33,10 @@ namespace Assets.Core
             this.routine = func;
         }
         /* Set Next Handler to be run after this ends */
-        public void SetAfter(Func<Params, HandlerFuture> genNextHander) 
+        public void SetAfter(Func<Params, HandlerFuture> genNextHandler) 
         {
-            throw new NotImplementedException();
+            Func<Params, IEnumerator<Params>> prevRoutine = routine;
+            routine = (ps) => After(ps, prevRoutine(ps), genNextHandler);
         }
 
         /* Set Next Handler to be run after this ends, but this one runs on another coroutine */
@@ -40,6 +44,30 @@ namespace Assets.Core
         {
             Func<Params, IEnumerator<Params>> prevRoutine = routine;
             routine = (ps) => NewAfter(ps, prevRoutine(ps), genNextHandler);
+        }
+
+        private IEnumerator<Params> After(Params ps, IEnumerator<Params> prevRoutine, Func<Params, HandlerFuture> genNextHandler)
+        {
+            IEnumerator<Params> nextRoutine = null;
+            while (true)
+            {
+                if (nextHandler != null)
+                {
+                    if(nextRoutine == null) nextRoutine = nextHandler.GetCoroutine();
+                    nextRoutine.MoveNext();
+                    yield return nextRoutine.Current;
+                }
+                else
+                {
+                    prevRoutine.MoveNext();
+                    if (prevRoutine.Current == null)
+                    {
+                        nextHandler = genNextHandler(ps);
+                        prevRoutine.Dispose();
+                    }
+                    yield return prevRoutine.Current;
+                }
+            }
         }
 
         private IEnumerator<Params> NewAfter(Params ps, IEnumerator<Params> prevRoutine, Func<Params, HandlerFuture> genNextHandler)
@@ -64,22 +92,17 @@ namespace Assets.Core
         public void AddExternalCondition(EventPromise external, bool stopOnTrigger)
         {
             //TODO: Implement stopOnTrigger
-            if (stopOnTrigger) throw new NotImplementedException();
-            routine = (ps) =>
-            {
-                external.Handler.Step();
-                return Step();
-            };
+            throw new NotImplementedException();
         }
         public void Begin()
         {
-            MonoHelper.MonoStartCoroutine(Step);
+            MonoHelper.MonoStartCoroutine(GetCoroutine);
         }
         private Func<Params, IEnumerator<Params>> GetRoutine()
         {
             return routine;
         }
-        public IEnumerator<Params> Step()
+        public IEnumerator<Params> GetCoroutine()
         {
             return GetRoutine()(initialParams);
         }

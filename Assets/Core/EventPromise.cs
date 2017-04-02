@@ -16,7 +16,7 @@ namespace Assets.Core
         protected abstract Dictionary<string, Action> OnRequestInitialUpdates();
 
         public EventPromise() {
-            handler = new CustomHandler(WaitUntilTrigger);
+            handler = new CustomHandler(WaitUntilTrigger, Params.Empty);
             foreach(KeyValuePair<string, Action> pair in OnRequestInitialUpdates())
             {
                 MonoHelper.MonoRegisterUpdateFunction(pair.Key, pair.Value);
@@ -44,18 +44,15 @@ namespace Assets.Core
 
         private IEnumerator<Params> WaitUntilTrigger(Params dummy)
         {
-            Debug.Log("WaitUntilTrigger Called");
             while (true)
             {
                 if (triggered)
                 {
-                    Debug.Log("Triggered");
                     yield return null;
                     triggered = false;
                 }
                 else
                 {
-                    Debug.Log("Non Triggered");
                     yield return Params.Empty;
                 }
             }

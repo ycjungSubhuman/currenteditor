@@ -8,14 +8,14 @@ namespace Assets.Core.Handler
 {
     class MoveConstant : HandlerFuture
     {
-        public MoveConstant()
+        public MoveConstant(Params ps)
+            :base(ps)
         {
             SetInitialRoutine(Move);
         }
 
         public IEnumerator<Params> Move(Params ps)
         {
-            Debug.Log("MoveConstant Called");
             GameObject target = ps.GetGameObject("Target");
             Vector3 velocity = ps.Get<Vector3>("Velocity");
             double timer = 0;
@@ -32,7 +32,7 @@ namespace Assets.Core.Handler
             yield break;
         }
 
-        protected override Dictionary<string, object> OnRequestInitialParamMap()
+        protected override Dictionary<string, object> OnRequestDefaultParamMap()
         {
             Dictionary<String, object> initial = new Dictionary<string, object>();
             initial.Add("Target", "test1");

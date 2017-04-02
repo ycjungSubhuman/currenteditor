@@ -18,13 +18,18 @@ namespace Assets.Core
             }
         }
 
-        public Params Add<T>(String name, T obj) {
+        public Params Add(String name, object obj) {
             map.Add(name, obj);
             return this;
         }
 
         public T Get<T>(String name) {
             return (T)map[name];
+        }
+
+        public bool ContainsKey(String name)
+        {
+            return map.Keys.Contains(name);
         }
 
         public GameObject GetGameObject(String nameKey)

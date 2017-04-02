@@ -13,7 +13,17 @@ public class RootScript : MonoBehaviour {
 	void Start () {
         //On Pressed Z, test1 will move right for 3 secs
         EventPromise p = new KeyDownEvent(KeyCode.Z);
-        p.Handler.SetNewAfter((ps) => new MoveConstant());
+        p.Handler.SetNewAfter((ps) =>
+        {
+            Params newParams = Params.Empty;
+            newParams.Add("Target", "test1");
+            newParams.Add("Velocity", new Vector3(0.0f, 0.01f, 0.0f));
+            newParams.Add("Duration", 0.5);
+            HandlerFuture hf = new MoveConstant(newParams);
+            hf.SetAfter((_) => new MoveConstant(Params.Empty));
+            return hf;
+        }
+        );
         p.Handler.Begin();
 	}
 	
