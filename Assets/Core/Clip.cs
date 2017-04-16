@@ -42,7 +42,7 @@ namespace Assets.Core
         public IEnumerable<Midi.MidiMessage> GetCurrMessages(int channel, Midi.MidiMessage.Type type)
         {
             var targets = from msg in midiMessages
-                          where Math.Abs(msg.Time - currTime) < delta
+                          where Math.Abs(msg.Time - currTime) < delta && audio.isPlaying
                           select msg;
             return targets;
         }

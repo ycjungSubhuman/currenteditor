@@ -68,7 +68,7 @@ public class RootScript : MonoBehaviour {
 
     private void Test3()
     {
-        //On Pressed X, testclip1 plays
+        //While Pressing X, testclip1 plays
         EventPromise p = new KeyDownEvent(KeyCode.X);
         p.Handler.SetNewAfter((ps) =>
         {
@@ -76,6 +76,11 @@ public class RootScript : MonoBehaviour {
             .Add("ClipName", "testclip1")
             .Add("Loop", true);
             HandlerFuture hf = new PlayClip(newParams);
+            EventPromise up = new KeyUpEvent(KeyCode.X);
+            hf.AddExternalCondition(up, (ps2) => {
+                ps2.Add("ClipName", "testclip1");
+                return new StopClip(ps2);
+                }, false);
             return hf;
         }
         );

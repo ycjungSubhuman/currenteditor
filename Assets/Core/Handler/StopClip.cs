@@ -7,26 +7,26 @@ using UnityEngine;
 
 namespace Assets.Core.Handler
 {
-    class PlayClip : HandlerFuture
+    class StopClip : HandlerFuture
     {
-        public PlayClip(Params ps) : base(ps)
+        public StopClip(Params ps) : base(ps)
         {
-            SetInitialRoutine(Play);
+            SetInitialRoutine(Stop);
         }
 
-        private IEnumerator<Params> Play(Params ps)
+        private IEnumerator<Params> Stop(Params ps)
         {
             String clipName = ps.Get<String>("ClipName");
-            bool loop = ps.Get<bool>("Loop");
+            bool pause = ps.Get<bool>("Pause");
             Clip clip = MonoHelper.MonoFindClip(clipName);
 
-            clip.Audio.loop = loop;
-            clip.Play();
-            yield return ps;
-            while(clip.Audio.isPlaying)
+            if (pause)
             {
-                clip.UpdateTime();
-                yield return ps;
+                throw new NotImplementedException();
+            }
+            else
+            {
+                clip.Audio.Stop();
             }
             yield return null;
             yield break;
@@ -36,7 +36,7 @@ namespace Assets.Core.Handler
         {
             Dictionary<string, object> initial = new Dictionary<string, object>();
             initial.Add("ClipName", "");
-            initial.Add("Loop", false);
+            initial.Add("Pause", false);
             return initial;
         }
     }

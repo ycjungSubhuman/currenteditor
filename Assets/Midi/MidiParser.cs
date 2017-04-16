@@ -155,6 +155,7 @@ namespace Assets.Midi
                         if (metatype == 81) // Set Tempo
                         {
                             tempo = BitConverter.ToInt32(data.Skip(head+2).Take(3).Reverse().Concat(new byte[] { 0 }).ToArray(), 0);
+                            state = State.TRACK_DELTATIME;
                         }
                         else if(metatype == 88) // TIme Signature
                         {
@@ -162,6 +163,7 @@ namespace Assets.Midi
                             timesig_denom = data.Skip(head + 3).Take(1).Reverse().ToArray()[0];
                             timesig_clocks_per_metronome = data.Skip(head + 4).Take(1).Reverse().ToArray()[0];
                             timesig_num_32_notes = data.Skip(head + 5).Take(1).Reverse().ToArray()[0];
+                            state = State.TRACK_DELTATIME;
                         }
                         else if (metatype == 47) //End of track
                         {
@@ -173,9 +175,13 @@ namespace Assets.Midi
                             track.TimeSignatureNumerator = timesig_numer;
                             tracks.Add(track);
                             deltatime = 0;
+                            state = State.TRACK_TYPE;
+                        }
+                        else
+                        {
+                            state = State.TRACK_DELTATIME;
                         }
                         head += metalength + 2;
-                        state = State.TRACK_DELTATIME;
                         break;
                     case State.TRACK_SYSEX_LENGTH:
                         int sysval = data.Skip(head).Take(1).Reverse().ToArray()[0];

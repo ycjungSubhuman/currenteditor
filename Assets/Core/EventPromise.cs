@@ -45,6 +45,10 @@ namespace Assets.Core
                 pair.Value();
             }
         }
+        public void Reset()
+        {
+            triggered = false;
+        }
 
         public void Trigger(Params input)
         {

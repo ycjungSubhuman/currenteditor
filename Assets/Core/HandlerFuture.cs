@@ -107,10 +107,12 @@ namespace Assets.Core
                     yield return null;
                     yield break;
                 }
-                else
+                else if (externalPromise.IsTriggered())
                 {
-                    yield return prevRoutine.Current;
+                    externalPromise.Reset();
+                    genNextHandler(ps).Begin();
                 }
+                yield return prevRoutine.Current;
             }
         }
 

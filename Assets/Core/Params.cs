@@ -19,7 +19,7 @@ namespace Assets.Core
         }
 
         public Params Add(String name, object obj) {
-            map.Add(name, obj);
+            map[name]= obj;
             return this;
         }
 
