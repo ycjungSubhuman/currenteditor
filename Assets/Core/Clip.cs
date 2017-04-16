@@ -10,6 +10,9 @@ namespace Assets.Core
     {
         private AudioSource audio;
         private Midi.Midi midi;
+        private IEnumerable<Midi.MidiMessage> midiMessages = new List<Midi.MidiMessage>();
+        private double currTime;
+        public double CurrTime { get { return currTime; } }
 
         public AudioSource Audio { get { return audio; } }
         public Midi.Midi Midi { get { return midi; } }
@@ -18,11 +21,31 @@ namespace Assets.Core
         {
             this.audio = audio;
             this.midi = midi;
+            this.midiMessages =
+                from trk in midi.Tracks
+                from msg in trk.Messages
+                select msg;
         }
 
         public void Play()
         {
+            currTime = 0;
             audio.Play();
         }
+
+        public void UpdateTime()
+        {
+            currTime = audio.time;
+        }
+
+        private const double delta = 0.03; //30ms
+        public IEnumerable<Midi.MidiMessage> GetCurrMessages(int channel, Midi.MidiMessage.Type type)
+        {
+            var targets = from msg in midiMessages
+                          where Math.Abs(msg.Time - currTime) < delta
+                          select msg;
+            return targets;
+        }
+
     }
 }

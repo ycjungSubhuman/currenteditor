@@ -26,7 +26,7 @@ namespace Assets.Core.Handler
             yield return ps;
             while(clip.Audio.isPlaying)
             {
-                currTime += Time.deltaTime;
+                clip.UpdateTime();
                 yield return ps;
             }
             yield return null;

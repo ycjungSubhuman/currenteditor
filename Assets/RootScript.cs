@@ -21,6 +21,7 @@ public class RootScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         InitMetaData();
+        Test4();
         Test3();
         Test2();
         Test1();
@@ -75,6 +76,24 @@ public class RootScript : MonoBehaviour {
             .Add("ClipName", "testclip1")
             .Add("Loop", true);
             HandlerFuture hf = new PlayClip(newParams);
+            return hf;
+        }
+        );
+        p.StartPollUpdateGlobal();
+        p.Handler.Begin();
+    }
+
+    private void Test4()
+    {
+        //On NOTE ON of CHANNEL 9 in testclip1, test1 moves right for 0.05 seconds
+        EventPromise p = new ClipMidiEvent("testclip1", 9, MidiMessage.Type.NOTE_ON);
+        p.Handler.SetNewAfter((ps) =>
+        {
+            Params newParams = Params.Empty
+                .Add("Target", "test1")
+                .Add("Velocity", new Vector3(0.01f, 0.00f, 0.0f))
+                .Add("Duration", Duration.FromString("0.05"));
+            HandlerFuture hf = new MoveConstant(newParams);
             return hf;
         }
         );
