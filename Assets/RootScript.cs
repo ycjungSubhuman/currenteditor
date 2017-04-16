@@ -2,6 +2,7 @@
 using Assets.Core.Event;
 using Assets.Core.Graph;
 using Assets.Core.Handler;
+using Assets.Midi;
 using Assets.Timeline.Utility;
 using System;
 using System.Collections;
@@ -74,7 +75,14 @@ public class RootScript : MonoBehaviour {
             var ser = new YamlDotNet.Serialization.Serializer();
 
             clips.Add(clip.Name, clipGraph);
-            Debug.Log("Constructed a clip graph : " + clip.Name);
+            var midiFile = Resources.Load<TextAsset>("clips/"+clipGraph.Midi);
+            Debug.Log(clipGraph.Midi);
+            Midi midi = new MidiParser().Parse(midiFile.bytes);
+            Debug.Log(midi.Tracks[2].Bpm);
+            foreach(var msg in midi.Tracks[2].Messages)
+            {
+                Debug.Log(msg);
+            }
             Debug.Log(ser.Serialize(clipGraph));
         }
         foreach(var graph in root.Scriptgraphs)
