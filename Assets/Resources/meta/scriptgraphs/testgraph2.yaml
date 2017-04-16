@@ -1,0 +1,44 @@
+# A test script graph
+# When pressed 'z', the object should move toward (1, 1, 1) for 3 seconds, after that
+# the object moves towards (-1, -1, -1) for 3 seconds.
+nodes:
+  - name: eventnode1
+    base: KeyDown
+    params:
+      keyCode: z
+    position:
+      x: 20
+      y: 20
+    succ:
+      - dest: testnode1
+        type: external
+        endPrev: true
+        condition: ""
+        dataLink: null
+  - name: testnode1
+    base: MoveConstant
+    params:
+      targetName: TestObject1
+      targetTag: TestTag1
+      velocity: x0.01|y0.01|z0.01
+      duration: 3.0
+    position:
+      x: 20
+      y: 20
+    succ:
+      - dest: testnode2
+        type: external
+        endPrev: true
+        condition: ""
+        dataLink: null
+  - name: testnode2
+    base: MoveConstant
+    params:
+      targetName: TestObject1
+      targetTag: TestTag1
+      velocity: x-0.01y-0.01z-0.01
+      duration: 3.0
+    position:
+      x: 40
+      y: 20
+    succ: []

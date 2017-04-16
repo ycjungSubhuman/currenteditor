@@ -1,17 +1,23 @@
 ﻿using Assets.Core;
 using Assets.Core.Event;
+using Assets.Core.Graph;
 using Assets.Core.Handler;
 using Assets.Timeline.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using YamlDotNet;
 
 public class RootScript : MonoBehaviour {
 
+    private Dictionary<string, ClipGraph> clips = new Dictionary<string, ClipGraph>();
+    private Dictionary<string, ScriptGraph> scripts = new Dictionary<string, ScriptGraph>();
+
 	// Use this for initialization
 	void Start () {
+        InitMetaData();
         Test2();
         Test1();
 	}
@@ -57,6 +63,32 @@ public class RootScript : MonoBehaviour {
 
     private void InitMetaData()
     {
+        var rootText = Resources.Load<TextAsset>("meta/root");
+        var docStream = new StringReader(rootText.text);
+        RootGraph root = RootGraph.Construct(docStream);
+        foreach(var clip in root.Clips)
+        {
+            var clipText = Resources.Load<TextAsset>("meta/"+clip.Path);
+            var clipDocStream = new StringReader(clipText.text);
+            ClipGraph clipGraph = ClipGraph.Construct(clipDocStream);
+            var ser = new YamlDotNet.Serialization.Serializer();
+
+            clips.Add(clip.Name, clipGraph);
+            Debug.Log("Constructed a clip graph : " + clip.Name);
+            Debug.Log(ser.Serialize(clipGraph));
+        }
+        foreach(var graph in root.Scriptgraphs)
+        {
+            var graphText = Resources.Load<TextAsset>("meta/"+graph.Path);
+            Debug.Log(graphText);
+            var graphDocStream = new StringReader(graphText.text);
+            ScriptGraph scriptGraph = ScriptGraph.Construct(graphDocStream);
+            var ser = new YamlDotNet.Serialization.Serializer();
+
+            scripts.Add(graph.Name, scriptGraph);
+            Debug.Log("Constructed a script graph : " + graph.Name);
+            Debug.Log(ser.Serialize(scriptGraph));
+        }
     }
 	
 	// Update is called once per frame

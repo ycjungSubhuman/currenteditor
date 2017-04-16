@@ -3,27 +3,27 @@
 - name: eventnode1
   base: ClipMidiEvent
   params:
-    ClipName: testclip1
+    clipName: testclip1
   position:
     x: 20
     y: 20
   succ:
     - dest: testnode1
       type: external
-      endprev: true
+      endPrev: true
       condition: ""
-      datalink: null
+      dataLink: null
 - name: testnode1
   base: MoveConstant
   params:
-    TargetName: TestObject1
-    TargetTag:
+    targetName: TestObject1
+    targetTag:
       - TestTag1
-    Velocity:
+    velocity:
       x: 0.01
       y: 0.01
       z: 0.01
-    Duration: 0
+    duration: 0
   position:
     x: 20
     y: 20

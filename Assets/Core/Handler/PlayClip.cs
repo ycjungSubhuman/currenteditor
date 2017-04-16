@@ -14,7 +14,7 @@ namespace Assets.Core.Handler
 
         private IEnumerator<Params> Play(Params ps)
         {
-            String clipName = ps.Get<String>("ClipName");
+            throw new NotImplementedException();
         }
 
         protected override Dictionary<string, object> OnRequestDefaultParamMap()
