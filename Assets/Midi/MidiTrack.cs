@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Assets.Midi
 {
-    class MidiTrack
+    public class MidiTrack
     {
         public double Bpm { get; set; }
         public int TimeSignatureNumerator { get; set; }

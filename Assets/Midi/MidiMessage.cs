@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Assets.Midi
 {
-    class MidiMessage
+    public class MidiMessage
     {
         public double Time { get; set; }
         public Type MessageType { get; set; }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Assets.Midi
 {
-    class Midi
+    public class Midi
     {
         public int NumTracks { get; set; }
         public int Division { get; set; }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Core;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,20 @@ namespace Assets.Timeline.Utility
         public static void MonoRegisterUpdateFunction(string name, Action action)
         {
             Updates.Add(name, action);
+        }
+
+        public static Clip MonoFindClip(String clipName)
+        {
+            GameObject root = GameObject.Find("UnityCurrentRootObject");
+            Clip clip;
+            try
+            {
+                clip = root.GetComponent<RootScript>().Clips[clipName];
+            } catch(KeyNotFoundException e)
+            {
+                clip = null;
+            }
+            return clip;
         }
     }
 }
