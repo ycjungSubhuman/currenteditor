@@ -11,8 +11,15 @@ public class RootScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        Test2();
+        Test1();
+	}
+
+    private void Test1()
+    {
         //On Pressed Z, test1 will move right for 3 secs
         EventPromise p = new KeyDownEvent(KeyCode.Z);
+        p.StartPollUpdateGlobal();
         p.Handler.SetNewAfter((ps) =>
         {
             Params newParams = Params.Empty
@@ -25,7 +32,27 @@ public class RootScript : MonoBehaviour {
         }
         );
         p.Handler.Begin();
-	}
+    }
+
+    private void Test2()
+    {
+        //On Pressed ->, test1 starts to move, on release, test1 stops
+        EventPromise p = new KeyDownEvent(KeyCode.RightArrow);
+        p.Handler.SetNewAfter((ps) =>
+        {
+            Params newParams = Params.Empty
+            .Add("Target", "test1")
+            .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f))
+            .Add("Duration", Duration.FromString("inf"));
+            HandlerFuture hf = new MoveConstant(newParams);
+            EventPromise up = new KeyUpEvent(KeyCode.RightArrow);
+            hf.AddExternalCondition(up, (_) => new DoNothing(), true);
+            return hf;
+        }
+        );
+        p.StartPollUpdateGlobal();
+        p.Handler.Begin();
+    }
 	
 	// Update is called once per frame
 	void Update () {

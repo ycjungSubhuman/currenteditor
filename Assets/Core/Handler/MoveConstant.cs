@@ -14,7 +14,7 @@ namespace Assets.Core.Handler
             SetInitialRoutine(Move);
         }
 
-        public IEnumerator<Params> Move(Params ps)
+        private IEnumerator<Params> Move(Params ps)
         {
             GameObject target = ps.GetGameObject("Target");
             Vector3 velocity = ps.Get<Vector3>("Velocity");

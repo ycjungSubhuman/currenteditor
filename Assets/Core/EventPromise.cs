@@ -13,14 +13,11 @@ namespace Assets.Core
         private HandlerFuture handler;
         private bool triggered = false;
 
-        protected abstract Dictionary<string, Action> OnRequestInitialUpdates();
+        /* Conditions for this promise*/
+        protected abstract Dictionary<string, Action> GetUpdates();
 
         public EventPromise() {
             handler = new CustomHandler(WaitUntilTrigger, Params.Empty);
-            foreach(KeyValuePair<string, Action> pair in OnRequestInitialUpdates())
-            {
-                MonoHelper.MonoRegisterUpdateFunction(pair.Key, pair.Value);
-            }
         }
 
         public HandlerFuture Handler
@@ -31,9 +28,32 @@ namespace Assets.Core
             }
         }
 
+        /* After this method is called, the conditions for this promise will be checked every frame */
+        public void StartPollUpdateGlobal()
+        {
+            foreach(KeyValuePair<string, Action> pair in GetUpdates())
+            {
+                MonoHelper.MonoRegisterUpdateFunction(pair.Key, pair.Value);
+            }
+        }
+
+        /* Update single time */
+        public void Update()
+        {
+            foreach(KeyValuePair<string, Action> pair in GetUpdates())
+            {
+                pair.Value();
+            }
+        }
+
         public void Trigger(Params input)
         {
             triggered = true;
+        }
+
+        public bool IsTriggered()
+        {
+            return triggered;
         }
 
         //This may not be necessary, so not implementing right now

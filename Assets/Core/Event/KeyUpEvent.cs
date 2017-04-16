@@ -6,10 +6,10 @@ using UnityEngine;
 
 namespace Assets.Core.Event
 {
-    class KeyDownEvent : EventPromise
+    class KeyUpEvent: EventPromise
     {
         private KeyCode keyCode;
-        public KeyDownEvent(KeyCode keyCode)
+        public KeyUpEvent(KeyCode keyCode)
         {
             this.keyCode = keyCode;
         }
@@ -17,9 +17,9 @@ namespace Assets.Core.Event
         protected override Dictionary<string, Action> GetUpdates()
         {
             Dictionary<string, Action> updates = new Dictionary<string, Action>();
-            updates.Add("KeyDown" + keyCode.ToString(), () => 
+            updates.Add("KeyUp" + keyCode.ToString(), () => 
             {
-                if (Input.GetKeyDown(keyCode))
+                if (Input.GetKeyUp(keyCode))
                 {
                     Trigger(Params.Empty);
                 }

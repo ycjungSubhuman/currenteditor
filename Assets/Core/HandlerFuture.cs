@@ -89,11 +89,31 @@ namespace Assets.Core
             throw new NotImplementedException();
         }
 
-        public void AddExternalCondition(EventPromise external, bool stopOnTrigger)
+        public void AddExternalCondition(EventPromise externalPromise, Func<Params, HandlerFuture> genNextHandler, bool stopOnTrigger)
         {
-            //TODO: Implement stopOnTrigger
-            throw new NotImplementedException();
+            Func<Params, IEnumerator<Params>> prevRoutine = routine;
+            externalPromise.Handler.SetAfter(genNextHandler);
+            routine = (ps) => CheckingExternalCondition(ps, prevRoutine(ps), externalPromise, genNextHandler, stopOnTrigger);
         }
+        
+        private IEnumerator<Params> CheckingExternalCondition(Params ps, IEnumerator<Params> prevRoutine, EventPromise externalPromise, Func<Params, HandlerFuture> genNextHandler, bool stopOnTrigger)
+        {
+            while(true)
+            {
+                externalPromise.Update();
+                prevRoutine.MoveNext();
+                if (stopOnTrigger && externalPromise.IsTriggered())
+                {
+                    yield return null;
+                    yield break;
+                }
+                else
+                {
+                    yield return prevRoutine.Current;
+                }
+            }
+        }
+
         public void Begin()
         {
             MonoHelper.MonoStartCoroutine(GetCoroutine);
