@@ -18,11 +18,11 @@ namespace Assets.Core.Handler
         {
             GameObject target = ps.GetGameObject("Target");
             Vector3 velocity = ps.Get<Vector3>("Velocity");
-            double timer = 0;
-            Double duration = ps.Get<Double>("Duration");
-            while (timer < duration)
+            double currTime = 0;
+            Duration duration = ps.Get<Duration>("Duration");
+            while (duration.InDuration(currTime))
             {
-                timer += Time.deltaTime;
+                currTime += Time.deltaTime;
                 target.GetComponent<Transform>().Translate(velocity);
                 yield return ps;
             }
@@ -37,7 +37,7 @@ namespace Assets.Core.Handler
             Dictionary<String, object> initial = new Dictionary<string, object>();
             initial.Add("Target", "test1");
             initial.Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f));
-            initial.Add("Duration", 0.5);
+            initial.Add("Duration", Duration.FromString("0.5"));
             return initial;
         }
     }

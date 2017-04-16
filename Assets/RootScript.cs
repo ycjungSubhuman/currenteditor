@@ -18,7 +18,7 @@ public class RootScript : MonoBehaviour {
             Params newParams = Params.Empty
                 .Add("Target", "test1")
                 .Add("Velocity", new Vector3(0.0f, 0.01f, 0.0f))
-                .Add("Duration", 0.5);
+                .Add("Duration", Duration.FromString("0.5"));
             HandlerFuture hf = new MoveConstant(newParams);
             hf.SetAfter((_) => new MoveConstant(Params.Empty));
             return hf;
