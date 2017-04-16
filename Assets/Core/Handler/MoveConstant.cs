@@ -23,7 +23,8 @@ namespace Assets.Core.Handler
             while (duration.InDuration(currTime))
             {
                 currTime += Time.deltaTime;
-                target.GetComponent<Transform>().Translate(velocity);
+                if(target != null)
+                    target.GetComponent<Transform>().Translate(velocity);
                 yield return ps;
             }
 
@@ -35,7 +36,7 @@ namespace Assets.Core.Handler
         protected override Dictionary<string, object> OnRequestDefaultParamMap()
         {
             Dictionary<String, object> initial = new Dictionary<string, object>();
-            initial.Add("Target", "test1");
+            initial.Add("Target", "");
             initial.Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f));
             initial.Add("Duration", Duration.FromString("0.5"));
             return initial;

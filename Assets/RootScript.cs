@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using YamlDotNet;
 
 public class RootScript : MonoBehaviour {
 
@@ -52,6 +53,10 @@ public class RootScript : MonoBehaviour {
         );
         p.StartPollUpdateGlobal();
         p.Handler.Begin();
+    }
+
+    private void InitMetaData()
+    {
     }
 	
 	// Update is called once per frame
