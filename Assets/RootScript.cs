@@ -21,10 +21,7 @@ public class RootScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         InitMetaData();
-        Test4();
-        Test3();
-        Test2();
-        Test1();
+        Test5();
 	}
 
     private void Test1()
@@ -105,6 +102,36 @@ public class RootScript : MonoBehaviour {
         p.StartPollUpdateGlobal();
         p.Handler.Begin();
     }
+
+    private void Test5()
+    {
+        //On Pressed ->, test1 starts to move, up/right repeatedly on release, test1 stops
+        EventPromise p = new KeyDownEvent(KeyCode.RightArrow);
+        p.Handler.SetNewAfter((ps) =>
+        {
+            Params newParams1 = Params.Empty
+            .Add("Target", "test1")
+            .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f))
+            .Add("Duration", Duration.FromString("0.1"));
+
+            Params newParams2 = Params.Empty
+            .Add("Target", "test1")
+            .Add("Velocity", new Vector3(0.00f, 0.01f, 0.0f))
+            .Add("Duration", Duration.FromString("0.1"));
+            HandlerFuture right = new MoveConstant(newParams1);
+            HandlerFuture up = new MoveConstant(newParams2);
+
+            right.SetAfter((_) => up);
+            up.SetAfter((_) => right);
+            EventPromise keyUp = new KeyUpEvent(KeyCode.RightArrow);
+            right.AddExternalCondition(keyUp, (_) => new DoNothing(), true);
+            return right;
+        }
+        );
+        p.StartPollUpdateGlobal();
+        p.Handler.Begin();
+    }
+
 
     private void InitMetaData()
     {

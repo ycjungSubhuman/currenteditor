@@ -12,7 +12,6 @@ namespace Assets.Core
     {
         private Func<Params, IEnumerator<Params>> routine;
         private Params initialParams = Params.Empty;
-        private HandlerFuture nextHandler;
 
         /** Default Param Initializer */
         protected abstract Dictionary<String, object> OnRequestDefaultParamMap();
@@ -51,9 +50,8 @@ namespace Assets.Core
             IEnumerator<Params> nextRoutine = null;
             while (true)
             {
-                if (nextHandler != null)
+                if (nextRoutine != null)
                 {
-                    if(nextRoutine == null) nextRoutine = nextHandler.GetCoroutine();
                     nextRoutine.MoveNext();
                     yield return nextRoutine.Current;
                 }
@@ -62,7 +60,7 @@ namespace Assets.Core
                     prevRoutine.MoveNext();
                     if (prevRoutine.Current == null)
                     {
-                        nextHandler = genNextHandler(ps);
+                        nextRoutine = genNextHandler(ps).GetCoroutine();
                         prevRoutine.Dispose();
                     }
                     yield return prevRoutine.Current;
