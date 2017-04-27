@@ -9,6 +9,13 @@ namespace Assets.Core
     public class Params
     {
         private Dictionary<String, object> map = new Dictionary<String, object>();
+        private Dictionary<string, string> dataLink = new Dictionary<string, string>();
+
+        private Params() { }
+        private Params(Dictionary<string, object> map)
+        {
+            this.map = map;
+        }
 
         public static Params Empty
         {
@@ -35,6 +42,23 @@ namespace Assets.Core
         public GameObject GetGameObject(String nameKey)
         {
             return GameObject.Find(map[nameKey] as String);
+        }
+
+        // DUMMY. Only supports direct link
+        // TODO: Add Support for modules to pipeline data
+        public void AddDataLInk(Dictionary<string, string> dataLink)
+        {
+            this.dataLink = dataLink;
+        }
+
+        public Params GetLinkedParams()
+        {
+            var result = new Dictionary<string, object>();
+            foreach (var pair in dataLink)
+            {
+                result[pair.Value] = map[pair.Key];
+            }
+            return new Params(result);
         }
     }
 }

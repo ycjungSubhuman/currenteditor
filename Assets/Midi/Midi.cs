@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Assets.Midi
 {
+    /* Representation of a parsed midifiles */
     public class Midi
     {
         public int NumTracks { get; set; }

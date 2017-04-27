@@ -21,7 +21,7 @@ public class RootScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         InitMetaData();
-        Test6();
+        Test7();
 	}
 
     private void Test1()
@@ -157,6 +157,32 @@ public class RootScript : MonoBehaviour {
         }
         );
         p.StartPollUpdateGlobal();
+        p.Handler.Begin();
+    }
+
+    private void Test7()
+    {
+        //On Pressed Z, test1 will move right for 0.5 secs after moving up for 0.5 secs. The target is tranferred using DataLink
+        EventPromise p = new KeyDownEvent(KeyCode.Z);
+        p.StartPollUpdateGlobal();
+        p.Handler.SetNewAfter((ps) =>
+        {
+            Params newParams = Params.Empty
+                .Add("Target", "test1")
+                .Add("Velocity", new Vector3(0.0f, 0.01f, 0.0f))
+                .Add("Duration", Duration.FromString("0.5"));
+            HandlerFuture right = new MoveConstant(newParams);
+            var dataLink = new Dictionary<string, string>();
+            dataLink.Add("Target", "Target");
+            newParams.AddDataLInk(dataLink);
+            Params params2 = newParams.GetLinkedParams()
+                .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f))
+                .Add("Duration", Duration.FromString("0.5"));
+            HandlerFuture up = new MoveConstant(params2);
+            right.SetAfter((_) => up);
+            return right;
+        }
+        );
         p.Handler.Begin();
     }
 
