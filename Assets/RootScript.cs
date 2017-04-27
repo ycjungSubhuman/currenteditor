@@ -21,7 +21,7 @@ public class RootScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         InitMetaData();
-        Test5();
+        Test6();
 	}
 
     private void Test1()
@@ -132,6 +132,33 @@ public class RootScript : MonoBehaviour {
         p.Handler.Begin();
     }
 
+    private void Test6()
+    {
+        //On Pressed ->, test1 starts to move right for 1 second. If pressed up while moving right, restarts this handler. After moving for 2 seconds, move up for 1 second.
+        EventPromise p = new KeyDownEvent(KeyCode.RightArrow);
+        p.Handler.SetNewAfter((ps) =>
+        {
+            Params newParams1 = Params.Empty
+            .Add("Target", "test1")
+            .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f))
+            .Add("Duration", Duration.FromString("1"));
+
+            Params newParams2 = Params.Empty
+            .Add("Target", "test1")
+            .Add("Velocity", new Vector3(0.00f, 0.01f, 0.0f))
+            .Add("Duration", Duration.FromString("1"));
+            HandlerFuture right = new MoveConstant(newParams1);
+            HandlerFuture up = new MoveConstant(newParams2);
+
+            EventPromise upDown = new KeyDownEvent(KeyCode.UpArrow);
+            right.AddExternalCondition(upDown, (_) => right, true);
+            right.SetAfter((_) => up);
+            return right;
+        }
+        );
+        p.StartPollUpdateGlobal();
+        p.Handler.Begin();
+    }
 
     private void InitMetaData()
     {

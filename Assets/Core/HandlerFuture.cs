@@ -98,19 +98,19 @@ namespace Assets.Core
         {
             while(true)
             {
-                externalPromise.Update();
                 prevRoutine.MoveNext();
-                if (stopOnTrigger && externalPromise.IsTriggered())
-                {
-                    yield return null;
-                    yield break;
-                }
-                else if (externalPromise.IsTriggered())
+                if (externalPromise.IsTriggered())
                 {
                     externalPromise.Reset();
                     genNextHandler(ps).Begin();
+                    if (stopOnTrigger)
+                    {
+                        yield break;
+                    }
                 }
+                externalPromise.Update();
                 yield return prevRoutine.Current;
+                if (prevRoutine.Current == null) yield break;
             }
         }
 
