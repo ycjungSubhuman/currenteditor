@@ -18,6 +18,8 @@ namespace Assets.Timeline
         GUIStyle outPointStyle;
         NodeWindow dragged;
 
+        Vector2 drag;
+
         Connection.Point selectedInPoint;
         Connection.Point selectedOutPoint;
         
@@ -51,10 +53,58 @@ namespace Assets.Timeline
             HandleSelector();
             HandleNodes();
             HandleConnections();
+            DrawConnectionPreview(Event.current);
             EditorGUILayout.EndVertical();
 
             if (GUI.changed) Repaint();
         }
+
+        private void DrawConnectionPreview(Event e)
+        {
+
+            Vector2 i;
+            Vector2 o;
+            Vector2 inTangent = Vector2.left * 80f;
+            Vector2 outTangent = Vector2.right * 80f;
+
+            if (selectedInPoint != null && selectedOutPoint == null)
+            {
+                i = selectedInPoint.rect.center;
+                o = e.mousePosition;
+            }
+            else if (selectedInPoint == null && selectedOutPoint != null)
+            {
+                i = e.mousePosition;
+                o = selectedOutPoint.rect.center;
+            }
+            else return;
+
+            if(i.x <= o.x)
+            {
+                if(i.y < o.y)
+                {
+                    inTangent += Vector2.up * 40f;
+                    outTangent += Vector2.up * 100f;
+                }
+                else
+                {
+                    inTangent += Vector2.down * 40f;
+                    outTangent += Vector2.down * 100f;
+                }
+            }
+
+            Handles.DrawBezier(
+                i,
+                o,
+                i + inTangent,
+                o + outTangent,
+                Color.white,
+                null,
+                2f
+                );
+            GUI.changed = true;
+        }
+
         void HandleSelector()
         {
             EditorGUILayout.BeginHorizontal(GUI.skin.box);
@@ -96,6 +146,7 @@ namespace Assets.Timeline
 
         private void OnGUIEvent(Event e)
         {
+            drag = Vector2.zero;
             //mouse on a node
             foreach (var node in nodes)
             {
@@ -119,7 +170,30 @@ namespace Assets.Timeline
                         break;
                 }
             }
-        } 
+
+            //drag
+            switch(e.type)
+            {
+                case EventType.MouseDrag:
+                    if(e.button == 2)
+                    {
+                        OnDrag(e.delta);
+                    }
+                    break;
+            }
+        }
+
+        private void OnDrag(Vector2 delta)
+        {
+            drag = delta;
+
+            foreach (var node in nodes)
+            {
+                node.Drag(delta);
+            }
+
+            GUI.changed = true;
+        }
 
         private void OnSelectorChange(int selected)
         {
