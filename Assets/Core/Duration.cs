@@ -6,7 +6,7 @@ using System.Text;
 namespace Assets.Core
 {
     /* Wrapper class for duration */
-    class Duration
+    public class Duration
     {
         bool isInf;
         double time;

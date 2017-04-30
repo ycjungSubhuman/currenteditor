@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Timeline.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,11 +9,11 @@ namespace Assets.Core
 {
     public class Params
     {
-        private Dictionary<String, object> map = new Dictionary<String, object>();
+        private Dictionary<String, string> map = new Dictionary<String, string>();
         private Dictionary<string, string> dataLink = new Dictionary<string, string>();
 
         private Params() { }
-        private Params(Dictionary<string, object> map)
+        private Params(Dictionary<string, string> map)
         {
             this.map = map;
         }
@@ -25,13 +26,9 @@ namespace Assets.Core
             }
         }
 
-        public Params Add(String name, object obj) {
+        public Params Add(String name, string obj) {
             map[name]= obj;
             return this;
-        }
-
-        public T Get<T>(String name) {
-            return (T)map[name];
         }
 
         public bool ContainsKey(String name)
@@ -44,6 +41,26 @@ namespace Assets.Core
             return GameObject.Find(map[nameKey] as String);
         }
 
+        public string GetString(String nameKey)
+        {
+            return map[nameKey];
+        }
+
+        public bool GetBool(String nameKey)
+        {
+            return bool.Parse(nameKey);
+        }
+
+        public Duration GetDuration(string nameKey)
+        {
+            return Duration.FromString(map[nameKey]);
+        }
+
+        public Vector3 GetVector3(String nameKey)
+        {
+            return Vector3Helper.SerializedToVector3(map[nameKey]);
+        }
+
         // DUMMY. Only supports direct link
         // TODO: Add Support for modules to pipeline data
         public void AddDataLInk(Dictionary<string, string> dataLink)
@@ -53,7 +70,7 @@ namespace Assets.Core
 
         public Params GetLinkedParams()
         {
-            var result = new Dictionary<string, object>();
+            var result = new Dictionary<string, string>();
             foreach (var pair in dataLink)
             {
                 result[pair.Value] = map[pair.Key];

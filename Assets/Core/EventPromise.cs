@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Assets.Core
 {
-    public abstract class EventPromise
+    public abstract class EventPromise: IDefaultParamProvider
     {
         private HandlerFuture handler;
         private bool triggered = false;
@@ -81,5 +81,7 @@ namespace Assets.Core
                 }
             }
         }
+
+        public abstract Dictionary<string, string> GetDefaultParams();
     }
 }

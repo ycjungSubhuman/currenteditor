@@ -9,6 +9,7 @@ namespace Assets.Core.Handler
 {
     class StopClip : HandlerFuture
     {
+        public StopClip() : base(Params.Empty){ }
         public StopClip(Params ps) : base(ps)
         {
             SetInitialRoutine(Stop);
@@ -16,8 +17,8 @@ namespace Assets.Core.Handler
 
         private IEnumerator<Params> Stop(Params ps)
         {
-            String clipName = ps.Get<String>("ClipName");
-            bool pause = ps.Get<bool>("Pause");
+            String clipName = ps.GetString("ClipName");
+            bool pause = ps.GetBool("Pause");
             Clip clip = MonoHelper.MonoFindClip(clipName);
 
             if (pause)
@@ -32,11 +33,11 @@ namespace Assets.Core.Handler
             yield break;
         }
 
-        protected override Dictionary<string, object> OnRequestDefaultParamMap()
+        protected override Dictionary<string, string> OnRequestDefaultParamMap()
         {
-            Dictionary<string, object> initial = new Dictionary<string, object>();
+            Dictionary<string, string> initial = new Dictionary<string, string>();
             initial.Add("ClipName", "");
-            initial.Add("Pause", false);
+            initial.Add("Pause", "false");
             return initial;
         }
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,12 +16,28 @@ namespace Assets.Timeline.SubWindows
         public Connection.Point inPoint;
         public Connection.Point outPoint;
 
+        public List<KeyValuePair<string, string>> paramPairs = new List<KeyValuePair<string, string>>();
+
         public GUIStyle style;
 
-        public NodeWindow(Vector2 position, float width, float height, 
+        public NodeWindow(String baseClassName, Vector2 position, float width, float height, 
             GUIStyle nodeStyle, GUIStyle inPointStyle, 
             GUIStyle outPointStyle, Action<Connection.Point> onClickInPoint, Action<Connection.Point> onClickOutPoint)
         {
+            Type t = null;
+            if(baseClassName.Contains("Event"))
+                t = Type.GetType("Assets.Core.Event."+baseClassName);
+            else
+                t = Type.GetType("Assets.Core.Handler."+baseClassName);
+
+            IDefaultParamProvider p = Activator.CreateInstance(t) as IDefaultParamProvider;
+            Debug.Log(baseClassName);
+            foreach(var pair in p.GetDefaultParams())
+            {
+                paramPairs.Add(pair);
+                Debug.Log(pair.Key + "/" + pair.Value);
+            }
+
             rect = new Rect(position.x, position.y, width, height);
             style = nodeStyle;
             inPoint = new Connection.Point(this, Connection.Point.Type.IN, inPointStyle, onClickInPoint);

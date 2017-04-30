@@ -18,9 +18,9 @@ namespace Assets.Core.Handler
             yield break;
         }
 
-        protected override Dictionary<string, object> OnRequestDefaultParamMap()
+        protected override Dictionary<string, string> OnRequestDefaultParamMap()
         {
-            return new Dictionary<string, object>();
+            return new Dictionary<string, string>();
         }
     }
 }

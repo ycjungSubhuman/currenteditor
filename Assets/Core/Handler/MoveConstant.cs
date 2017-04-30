@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Assets.Timeline.Utility;
 
 namespace Assets.Core.Handler
 {
     class MoveConstant : HandlerFuture
     {
+        public MoveConstant() : base(Params.Empty){ }
         public MoveConstant(Params ps)
             :base(ps)
         {
@@ -17,9 +19,9 @@ namespace Assets.Core.Handler
         private IEnumerator<Params> Move(Params ps)
         {
             GameObject target = ps.GetGameObject("Target");
-            Vector3 velocity = ps.Get<Vector3>("Velocity");
+            Vector3 velocity = ps.GetVector3("Velocity");
             double currTime = 0;
-            Duration duration = ps.Get<Duration>("Duration");
+            Duration duration = ps.GetDuration("Duration");
             while (duration.InDuration(currTime))
             {
                 currTime += Time.deltaTime;
@@ -33,12 +35,12 @@ namespace Assets.Core.Handler
             yield break;
         }
 
-        protected override Dictionary<string, object> OnRequestDefaultParamMap()
+        protected override Dictionary<string, string> OnRequestDefaultParamMap()
         {
-            Dictionary<String, object> initial = new Dictionary<string, object>();
+            Dictionary<String, string> initial = new Dictionary<string, string>();
             initial.Add("Target", "");
-            initial.Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f));
-            initial.Add("Duration", Duration.FromString("0.5"));
+            initial.Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f).GetSerialized());
+            initial.Add("Duration", "0.5");
             return initial;
         }
     }

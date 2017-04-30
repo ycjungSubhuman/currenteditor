@@ -8,20 +8,20 @@ using UnityEngine;
 
 namespace Assets.Core
 {
-    public abstract class HandlerFuture
+    public abstract class HandlerFuture: IDefaultParamProvider
     {
         private Func<Params, IEnumerator<Params>> routine;
         private Params initialParams = Params.Empty;
 
         /** Default Param Initializer */
-        protected abstract Dictionary<String, object> OnRequestDefaultParamMap();
+        protected abstract Dictionary<String, string> OnRequestDefaultParamMap();
 
         public HandlerFuture(Params ps)
         {
-            foreach (KeyValuePair<String, object> pair in OnRequestDefaultParamMap())
+            foreach (KeyValuePair<String, string> pair in OnRequestDefaultParamMap())
             {
                 if(ps.ContainsKey(pair.Key))
-                    initialParams.Add(pair.Key, ps.Get<object>(pair.Key));
+                    initialParams.Add(pair.Key, ps.GetString(pair.Key));
                 else 
                     initialParams.Add(pair.Key, pair.Value);
             }
@@ -125,6 +125,11 @@ namespace Assets.Core
         public IEnumerator<Params> GetCoroutine()
         {
             return GetRoutine()(initialParams);
+        }
+
+        public Dictionary<string, string> GetDefaultParams()
+        {
+            return OnRequestDefaultParamMap();
         }
     }
 }

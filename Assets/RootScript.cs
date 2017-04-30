@@ -33,8 +33,8 @@ public class RootScript : MonoBehaviour {
         {
             Params newParams = Params.Empty
                 .Add("Target", "test1")
-                .Add("Velocity", new Vector3(0.0f, 0.01f, 0.0f))
-                .Add("Duration", Duration.FromString("0.5"));
+                .Add("Velocity", new Vector3(0.0f, 0.01f, 0.0f).GetSerialized())
+                .Add("Duration", "0.5");
             HandlerFuture hf = new MoveConstant(newParams);
             hf.SetAfter((_) => new MoveConstant(Params.Empty.Add("Target", "test1")));
             return hf;
@@ -51,8 +51,8 @@ public class RootScript : MonoBehaviour {
         {
             Params newParams = Params.Empty
             .Add("Target", "test1")
-            .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f))
-            .Add("Duration", Duration.FromString("inf"));
+            .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f).GetSerialized())
+            .Add("Duration", "inf");
             HandlerFuture hf = new MoveConstant(newParams);
             EventPromise up = new KeyUpEvent(KeyCode.RightArrow);
             hf.AddExternalCondition(up, (_) => new DoNothing(), true);
@@ -71,7 +71,7 @@ public class RootScript : MonoBehaviour {
         {
             Params newParams = Params.Empty
             .Add("ClipName", "testclip1")
-            .Add("Loop", true);
+            .Add("Loop", "true");
             HandlerFuture hf = new PlayClip(newParams);
             EventPromise up = new KeyUpEvent(KeyCode.X);
             hf.AddExternalCondition(up, (ps2) => {
@@ -93,8 +93,8 @@ public class RootScript : MonoBehaviour {
         {
             Params newParams = Params.Empty
                 .Add("Target", "test1")
-                .Add("Velocity", new Vector3(0.01f, 0.00f, 0.0f))
-                .Add("Duration", Duration.FromString("0.05"));
+                .Add("Velocity", new Vector3(0.01f, 0.00f, 0.0f).GetSerialized())
+                .Add("Duration", "0.05");
             HandlerFuture hf = new MoveConstant(newParams);
             return hf;
         }
@@ -111,13 +111,13 @@ public class RootScript : MonoBehaviour {
         {
             Params newParams1 = Params.Empty
             .Add("Target", "test1")
-            .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f))
-            .Add("Duration", Duration.FromString("0.1"));
+            .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f).GetSerialized())
+            .Add("Duration", "0.1");
 
             Params newParams2 = Params.Empty
             .Add("Target", "test1")
-            .Add("Velocity", new Vector3(0.00f, 0.01f, 0.0f))
-            .Add("Duration", Duration.FromString("0.1"));
+            .Add("Velocity", new Vector3(0.00f, 0.01f, 0.0f).GetSerialized())
+            .Add("Duration", "0.1");
             HandlerFuture right = new MoveConstant(newParams1);
             HandlerFuture up = new MoveConstant(newParams2);
 
@@ -140,13 +140,13 @@ public class RootScript : MonoBehaviour {
         {
             Params newParams1 = Params.Empty
             .Add("Target", "test1")
-            .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f))
-            .Add("Duration", Duration.FromString("1"));
+            .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f).GetSerialized())
+            .Add("Duration", "1");
 
             Params newParams2 = Params.Empty
             .Add("Target", "test1")
-            .Add("Velocity", new Vector3(0.00f, 0.01f, 0.0f))
-            .Add("Duration", Duration.FromString("1"));
+            .Add("Velocity", new Vector3(0.00f, 0.01f, 0.0f).GetSerialized())
+            .Add("Duration", "1");
             HandlerFuture right = new MoveConstant(newParams1);
             HandlerFuture up = new MoveConstant(newParams2);
 
@@ -169,15 +169,15 @@ public class RootScript : MonoBehaviour {
         {
             Params newParams = Params.Empty
                 .Add("Target", "test1")
-                .Add("Velocity", new Vector3(0.0f, 0.01f, 0.0f))
-                .Add("Duration", Duration.FromString("0.5"));
+                .Add("Velocity", new Vector3(0.0f, 0.01f, 0.0f).GetSerialized())
+                .Add("Duration", "0.5");
             HandlerFuture up = new MoveConstant(newParams);
             var dataLink = new Dictionary<string, string>();
             dataLink.Add("Target", "Target");
             newParams.AddDataLInk(dataLink);
             Params params2 = newParams.GetLinkedParams()
-                .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f))
-                .Add("Duration", Duration.FromString("0.5"));
+                .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f).GetSerialized())
+                .Add("Duration", "0.5");
             HandlerFuture right = new MoveConstant(params2);
             up.SetAfter((_) => right);
             return up;

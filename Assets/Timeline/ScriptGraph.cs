@@ -127,7 +127,7 @@ namespace Assets.Timeline
         }
         private void OnClickAddNode(Vector2 mousePosition)
         {
-            nodes.Add(new NodeWindow(mousePosition, 200, 50, nodeStyle, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint));
+            nodes.Add(new NodeWindow("MoveConstant", mousePosition, 200, 50, nodeStyle, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint));
         } 
         private NodeWindow SelectNode(Vector2 mousePosition)
         {

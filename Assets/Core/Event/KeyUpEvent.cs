@@ -9,6 +9,7 @@ namespace Assets.Core.Event
     class KeyUpEvent: EventPromise
     {
         private KeyCode keyCode;
+        public KeyUpEvent() { }
         public KeyUpEvent(KeyCode keyCode)
         {
             this.keyCode = keyCode;
@@ -26,6 +27,14 @@ namespace Assets.Core.Event
             }
             );
             return updates;
+        }
+
+        public override Dictionary<string, string> GetDefaultParams()
+        {
+            return new Dictionary<string, string>()
+            {
+                { "KeyCode", KeyCode.Z.ToString() },
+            };
         }
     }
 }

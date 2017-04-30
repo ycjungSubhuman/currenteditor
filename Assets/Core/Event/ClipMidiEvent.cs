@@ -12,6 +12,8 @@ namespace Assets.Core.Event
         int channel;
         Midi.MidiMessage.Type type;
 
+        public ClipMidiEvent() { }
+
         public ClipMidiEvent(String clipName, int channel, Midi.MidiMessage.Type type)
         {
             this.clipName = clipName;
@@ -33,6 +35,16 @@ namespace Assets.Core.Event
             }
             );
             return updates;
+        }
+
+        public override Dictionary<string, string> GetDefaultParams()
+        {
+            return new Dictionary<string, string>()
+            {
+                { "ClipName", "" },
+                { "Channel", "1" },
+                { "MessageType", Midi.MidiMessage.Type.NOTE_ON.ToString() },
+            };
         }
     }
 }

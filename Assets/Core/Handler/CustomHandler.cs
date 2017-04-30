@@ -7,15 +7,16 @@ namespace Assets.Core.Handler
 {
     class CustomHandler : HandlerFuture
     {
+        public CustomHandler() : base(Params.Empty){ }
         public CustomHandler(Func<Params, IEnumerator<Params>> initial, Params ps)
             :base(ps)
         {
             SetInitialRoutine(initial);
         }
 
-        protected override Dictionary<string, object> OnRequestDefaultParamMap()
+        protected override Dictionary<string, string> OnRequestDefaultParamMap()
         {
-            return new Dictionary<string, object>();
+            return new Dictionary<string, string>();
         }
     }
 }
