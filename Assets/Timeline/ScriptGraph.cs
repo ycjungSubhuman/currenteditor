@@ -18,6 +18,7 @@ namespace Assets.Timeline
         GUIStyle outPointStyle;
         NodeWindow dragged;
 
+        Vector2 offset;
         Vector2 drag;
 
         Connection.Point selectedInPoint;
@@ -51,12 +52,39 @@ namespace Assets.Timeline
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
             HandleSelector();
+            DrawGrid(20, 0.2f, Color.gray);
+            DrawGrid(100, 0.4f, Color.gray);
             HandleNodes();
             HandleConnections();
             DrawConnectionPreview(Event.current);
             EditorGUILayout.EndVertical();
 
             if (GUI.changed) Repaint();
+        }
+
+        private void DrawGrid(float gridSpacing, float gridOpacity, Color gridColor)
+        {
+            int widthDivs = Mathf.CeilToInt(position.width / gridSpacing);
+            int heightDivs = Mathf.CeilToInt(position.height / gridSpacing);
+
+            Handles.BeginGUI();
+            Handles.color = new Color(gridColor.r, gridColor.g, gridColor.b, gridOpacity);
+
+            offset += drag * 0.5f;
+            Vector3 newOffset = new Vector3(offset.x % gridSpacing, offset.y % gridSpacing, 0);
+
+            for (int i=0; i< widthDivs; i++)
+            {
+                Handles.DrawLine(new Vector3(gridSpacing * i, -gridSpacing, 0) + newOffset, new Vector3(gridSpacing *i, position.height, 0) + newOffset);
+            }
+
+            for (int i=0; i< heightDivs; i++)
+            {
+                Handles.DrawLine(new Vector3(-gridSpacing, gridSpacing * i, 0) + newOffset, new Vector3(position.width, gridSpacing * i, 0) + newOffset);
+            }
+
+            Handles.color = Color.white;
+            Handles.EndGUI();
         }
 
         private void DrawConnectionPreview(Event e)
