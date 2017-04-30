@@ -171,16 +171,16 @@ public class RootScript : MonoBehaviour {
                 .Add("Target", "test1")
                 .Add("Velocity", new Vector3(0.0f, 0.01f, 0.0f))
                 .Add("Duration", Duration.FromString("0.5"));
-            HandlerFuture right = new MoveConstant(newParams);
+            HandlerFuture up = new MoveConstant(newParams);
             var dataLink = new Dictionary<string, string>();
             dataLink.Add("Target", "Target");
             newParams.AddDataLInk(dataLink);
             Params params2 = newParams.GetLinkedParams()
                 .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f))
                 .Add("Duration", Duration.FromString("0.5"));
-            HandlerFuture up = new MoveConstant(params2);
-            right.SetAfter((_) => up);
-            return right;
+            HandlerFuture right = new MoveConstant(params2);
+            up.SetAfter((_) => right);
+            return up;
         }
         );
         p.Handler.Begin();
