@@ -21,13 +21,34 @@ namespace Assets.Timeline.SubWindows
             this.onClickRemoveConnection = onClickRemoveConnection;
         }
 
+        Vector2 inTangent = Vector2.left * 80f;
+        Vector2 outTangent = Vector2.right * 80f;
         public void Draw()
         {
+            Vector2 i = inPoint.rect.center;
+            Vector2 o = outPoint.rect.center;
+            inTangent = Vector2.left * 80f;
+            outTangent = Vector2.right * 80f;
+
+            if(i.x <= o.x)
+            {
+                if(i.y < o.y)
+                {
+                    inTangent += Vector2.up * 40f;
+                    outTangent += Vector2.up * 100f;
+                }
+                else
+                {
+                    inTangent += Vector2.down * 40f;
+                    outTangent += Vector2.down * 100f;
+                }
+            }
+
             Handles.DrawBezier(
                 inPoint.rect.center,
                 outPoint.rect.center,
-                inPoint.rect.center + Vector2.left * 50f,
-                outPoint.rect.center - Vector2.left * 50f,
+                inPoint.rect.center + inTangent,
+                outPoint.rect.center + outTangent,
                 Color.white,
                 null,
                 2f
@@ -36,7 +57,7 @@ namespace Assets.Timeline.SubWindows
 
         public bool Removed()
         {
-            return Handles.Button((inPoint.rect.center + outPoint.rect.center) * 0.5f, Quaternion.identity, 4, 8, Handles.RectangleCap);
+            return Handles.Button((inPoint.rect.center + outPoint.rect.center + inTangent + outTangent) * 0.5f, Quaternion.identity, 4, 8, Handles.RectangleCap);
         }
 
         public class Point
