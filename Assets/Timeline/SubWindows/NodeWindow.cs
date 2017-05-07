@@ -10,7 +10,6 @@ namespace Assets.Timeline.SubWindows
     public class NodeWindow
     {
         public Rect rect;
-        public string title = "STUB";
         private bool dragged = false;
 
         public Connection.Point inPoint;
@@ -19,27 +18,33 @@ namespace Assets.Timeline.SubWindows
         public List<KeyValuePair<string, string>> paramPairs = new List<KeyValuePair<string, string>>();
 
         public GUIStyle style;
+        private string baseClassName;
 
         public NodeWindow(String baseClassName, Vector2 position, float width, float height, 
-            GUIStyle nodeStyle, GUIStyle inPointStyle, 
+            GUIStyle inPointStyle, 
             GUIStyle outPointStyle, Action<Connection.Point> onClickInPoint, Action<Connection.Point> onClickOutPoint)
         {
             Type t = null;
-            if(baseClassName.Contains("Event"))
-                t = Type.GetType("Assets.Core.Event."+baseClassName);
+            this.baseClassName = baseClassName;
+            if (baseClassName.Contains("Event"))
+            {
+                t = Type.GetType("Assets.Core.Event." + baseClassName);
+                style = (GUIStyle)"flow node hex 3";
+            }
             else
-                t = Type.GetType("Assets.Core.Handler."+baseClassName);
+            {
+                t = Type.GetType("Assets.Core.Handler." + baseClassName);
+                style = (GUIStyle)"flow node 1";
+            }
 
             IDefaultParamProvider p = Activator.CreateInstance(t) as IDefaultParamProvider;
-            Debug.Log(baseClassName);
             foreach(var pair in p.GetDefaultParams())
             {
                 paramPairs.Add(pair);
-                Debug.Log(pair.Key + "/" + pair.Value);
             }
 
+            style.border = new RectOffset(12, 12, 12, 12);
             rect = new Rect(position.x, position.y, width, height);
-            style = nodeStyle;
             inPoint = new Connection.Point(this, Connection.Point.Type.IN, inPointStyle, onClickInPoint);
             outPoint = new Connection.Point(this, Connection.Point.Type.OUT, outPointStyle, onClickOutPoint);
         }
@@ -53,7 +58,20 @@ namespace Assets.Timeline.SubWindows
         {
             inPoint.Draw();
             outPoint.Draw();
-            GUI.Box(rect, title, style);
+            GUI.Box(rect, "", style);
+            GUIStyle titleStyle = new GUIStyle();
+            titleStyle.alignment = TextAnchor.MiddleCenter;
+            GUI.Label(new Rect(rect.x, rect.y, rect.width, 18f), new GUIContent(baseClassName), titleStyle);
+            DrawParams();
+        }
+
+        String test = "";
+        float paramMarginX = 1f;
+        float paramMarginY = 0.7f;
+        private void DrawParams()
+        {
+            test = GUI.TextField(new Rect(rect.x+paramMarginX, rect.y+18f, rect.width/2-2*paramMarginX, 16f), test);
+            test = GUI.TextField(new Rect(rect.x+paramMarginX, rect.y+18*2+paramMarginY, rect.width/2-2*paramMarginX, 14f), test);
         }
 
         public bool ProcessEvents(Event e)

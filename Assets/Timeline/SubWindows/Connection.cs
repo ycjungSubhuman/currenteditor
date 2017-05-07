@@ -86,10 +86,10 @@ namespace Assets.Timeline.SubWindows
                 switch(type)
                 {
                     case Type.IN:
-                        rect.x = masterNode.rect.x - this.rect.width + 8f;
+                        rect.x = masterNode.rect.x - this.rect.width + 0f;
                         break;
                     case Type.OUT:
-                        rect.x = masterNode.rect.x + masterNode.rect.width - 8f;
+                        rect.x = masterNode.rect.x + masterNode.rect.width - 0f;
                         break;
                 }
 

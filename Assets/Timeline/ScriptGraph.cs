@@ -32,11 +32,6 @@ namespace Assets.Timeline
 
         private void OnEnable()
         {
-            nodeStyle = new GUIStyle();
-            nodeStyle.normal.background = 
-                EditorGUIUtility.Load("builtin skins/darkskin/images/node1.png") as Texture2D;
-            nodeStyle.border = new RectOffset(12, 12, 12, 12);
-
             inPointStyle = new GUIStyle();
             inPointStyle.normal.background = EditorGUIUtility.Load("builtin skins/darkskin/images/btn left.png") as Texture2D;
             inPointStyle.active.background = EditorGUIUtility.Load("builtin skins/darkskin/images/btn left on.png") as Texture2D;
@@ -189,6 +184,9 @@ namespace Assets.Timeline
                 switch (e.type)
                 {
                     case EventType.MouseDown:
+                        Debug.Log("woeijfwoie");
+                        GUI.FocusControl(null);
+                        GUI.changed = true;
                         if (e.button == 1) //right
                         {
                             HandleContextMenu(e.mousePosition);
@@ -229,7 +227,7 @@ namespace Assets.Timeline
         }
         private void OnClickAddNode(Vector2 mousePosition)
         {
-            nodes.Add(new NodeWindow("MoveConstant", mousePosition, 200, 50, nodeStyle, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint));
+            nodes.Add(new NodeWindow("MoveConstant", mousePosition, 200, 50, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint));
         } 
         private NodeWindow SelectNode(Vector2 mousePosition)
         {
