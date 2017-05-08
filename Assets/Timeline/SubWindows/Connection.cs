@@ -13,6 +13,8 @@ namespace Assets.Timeline.SubWindows
         public Point inPoint;
         public Point outPoint;
         public Action<Connection> onClickRemoveConnection;
+        public Rect connRect;
+        public bool stopPrev = false;
 
         public Connection(Connection.Point inPoint, Connection.Point outPoint, Action<Connection> onClickRemoveConnection)
         {
@@ -53,11 +55,39 @@ namespace Assets.Timeline.SubWindows
                 null,
                 2f
                 );
+            if(stopPrev)
+                GUI.Box(new Rect(o.x, o.y, 100f, 20f), new GUIContent("Stop"), (GUIStyle)"OL Minus");
+            Vector2 center = i + o / 2;
+            Vector2 wh = new Vector2(btnWidth, btnHeight);
+            connRect = new Rect((i + o + inTangent + outTangent - wh * 0.5f) * 0.5f, wh);
+            GUI.Box(connRect, new GUIContent(), (GUIStyle)"flow var 4");
+        }
+        const float btnWidth = 20f;
+        const float btnHeight = 20f;
+
+        public bool OnGUIEvent(Event e)
+        {
+            switch (e.type)
+            {
+                case EventType.MouseDown:
+                    if(connRect.Contains(e.mousePosition))
+                    {
+                        HandleContextMenu();
+                        return true;
+                    }
+                    break;
+            }
+            return false;
         }
 
-        public bool Removed()
+        private void HandleContextMenu()
         {
-            return Handles.Button((inPoint.rect.center + outPoint.rect.center + inTangent + outTangent) * 0.5f, Quaternion.identity, 4, 8, Handles.RectangleCap);
+            GenericMenu menu = new GenericMenu();
+            menu.AddItem(new GUIContent("Stop Previous On Transition"), stopPrev, ()=> stopPrev= !stopPrev);
+            menu.AddItem(new GUIContent("Add Condition"), false, ()=> onClickRemoveConnection(this));
+            menu.AddSeparator("");
+            menu.AddItem(new GUIContent("Delete?/Delete"), false, () => onClickRemoveConnection(this));
+            menu.ShowAsContext();
         }
 
         public class Point

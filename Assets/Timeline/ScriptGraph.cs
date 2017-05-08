@@ -64,6 +64,7 @@ namespace Assets.Timeline
             DrawGrid(100, 0.4f, Color.gray);
             HandleNodes();
             HandleConnections();
+            OnGUIEvent(Event.current);
             DrawConnectionPreview(Event.current);
             EditorGUILayout.EndVertical();
 
@@ -161,7 +162,6 @@ namespace Assets.Timeline
             {
                 node.Draw();
             }
-            OnGUIEvent(Event.current);
         }
         void HandleConnections()
         {
@@ -169,10 +169,6 @@ namespace Assets.Timeline
             {
                 conn.Draw();
             }
-
-            connections = (from conn in connections
-                          where !conn.Removed()
-                          select conn).ToList();
         }
         void HandleContextMenu(Vector2 mousePosition)
         {
@@ -197,16 +193,22 @@ namespace Assets.Timeline
                 GUI.changed = node.ProcessEvents(e);
             }
 
+            foreach(var conn in connections)
+            {
+                GUI.changed = conn.OnGUIEvent(e);
+            }
+
             if (e.keyCode == KeyCode.Return || e.type == EventType.MouseDown)
             {
                 GUI.FocusControl(null);
                 GUI.changed = true;
             }
 
-            //mouse on a node - Menu
+            //mouse on a connection - Menu
 
             //mouse on empty space
-            if (!nodes.Any(n => n.MouseOverlapped(e.mousePosition)))
+            if (!nodes.Any(n => n.MouseOverlapped(e.mousePosition)) && 
+            !connections.Any(c => c.connRect.Contains(e.mousePosition)))
             {
                 switch (e.type)
                 {
@@ -292,6 +294,10 @@ namespace Assets.Timeline
         private void OnClickRemoveNode(NodeWindow node)
         {
             nodes.Remove(node);
+            connections = (from conn in connections
+                           where conn.inPoint != node.inPoint && conn.outPoint != node.outPoint
+                           select conn)
+                           .ToList();
         }
 
         private void CreateConnection()
