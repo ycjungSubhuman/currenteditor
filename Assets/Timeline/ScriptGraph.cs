@@ -1,7 +1,9 @@
-﻿using Assets.Timeline.SubWindows;
+﻿using Assets.Core;
+using Assets.Timeline.SubWindows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -23,6 +25,8 @@ namespace Assets.Timeline
 
         Connection.Point selectedInPoint;
         Connection.Point selectedOutPoint;
+        List<string> handlerNames;
+        List<string> eventNames;
         
         [MenuItem ("Window/ScriptGraph")]
         public static void ShowWindow()
@@ -41,6 +45,15 @@ namespace Assets.Timeline
             outPointStyle.normal.background = EditorGUIUtility.Load("builtin skins/darkskin/images/btn right.png") as Texture2D;
             outPointStyle.active.background = EditorGUIUtility.Load("builtin skins/darkskin/images/btn right on.png") as Texture2D;
             outPointStyle.border = new RectOffset(4, 4, 12, 12);
+
+            var handlers = from t in Assembly.GetExecutingAssembly().GetTypes()
+                                   where t.IsClass && t.BaseType==Type.GetType("Assets.Core.HandlerFuture") && t.Namespace == "Assets.Core.Handler"
+                                   select t.Name;
+            handlerNames = handlers.ToList();
+            var events = from t in Assembly.GetExecutingAssembly().GetTypes()
+                                   where t.IsClass && t.BaseType==Type.GetType("Assets.Core.EventPromise") && t.Namespace == "Assets.Core.Event"
+                                   select t.Name;
+            eventNames = events.ToList();
         }
 
         private void OnGUI()
@@ -135,6 +148,7 @@ namespace Assets.Timeline
 
             int selected = EditorGUILayout.Popup(selectorIndex, options.ToArray(), GUILayout.Width(50f));
             if (selected != selectorIndex) //Changed
+
             {
                 selectorIndex = selected;
                 OnSelectorChange(selected);
@@ -163,7 +177,14 @@ namespace Assets.Timeline
         void HandleContextMenu(Vector2 mousePosition)
         {
             GenericMenu genericMenu = new GenericMenu();
-            genericMenu.AddItem(new GUIContent("New Node"), false, () => OnClickAddNode(mousePosition));
+            foreach (var h in handlerNames)
+            {
+                genericMenu.AddItem(new GUIContent("Handlers/"+h), false, () => OnClickAddNode(mousePosition, h));
+            }
+            foreach (var e in eventNames)
+            {
+                genericMenu.AddItem(new GUIContent("Events/"+e), false, () => OnClickAddNode(mousePosition, e));
+            }
             genericMenu.ShowAsContext();
         }
 
@@ -176,6 +197,12 @@ namespace Assets.Timeline
                 GUI.changed = node.ProcessEvents(e);
             }
 
+            if (e.keyCode == KeyCode.Return || e.type == EventType.MouseDown)
+            {
+                GUI.FocusControl(null);
+                GUI.changed = true;
+            }
+
             //mouse on a node - Menu
 
             //mouse on empty space
@@ -184,9 +211,6 @@ namespace Assets.Timeline
                 switch (e.type)
                 {
                     case EventType.MouseDown:
-                        Debug.Log("woeijfwoie");
-                        GUI.FocusControl(null);
-                        GUI.changed = true;
                         if (e.button == 1) //right
                         {
                             HandleContextMenu(e.mousePosition);
@@ -225,9 +249,9 @@ namespace Assets.Timeline
         {
 
         }
-        private void OnClickAddNode(Vector2 mousePosition)
+        private void OnClickAddNode(Vector2 mousePosition, string className)
         {
-            nodes.Add(new NodeWindow("MoveConstant", mousePosition, 200, 50, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint));
+            nodes.Add(new NodeWindow(className, "New"+className, mousePosition, 250, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode));
         } 
         private NodeWindow SelectNode(Vector2 mousePosition)
         {
@@ -264,6 +288,10 @@ namespace Assets.Timeline
         private void OnClickRemoveConnection(Connection connection)
         {
             connections.Remove(connection);
+        }
+        private void OnClickRemoveNode(NodeWindow node)
+        {
+            nodes.Remove(node);
         }
 
         private void CreateConnection()
