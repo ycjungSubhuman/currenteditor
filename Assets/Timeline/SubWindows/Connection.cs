@@ -57,7 +57,6 @@ namespace Assets.Timeline.SubWindows
                 );
             if(stopPrev)
                 GUI.Box(new Rect(o.x, o.y, 100f, 20f), new GUIContent("Stop"), (GUIStyle)"OL Minus");
-            Vector2 center = i + o / 2;
             Vector2 wh = new Vector2(btnWidth, btnHeight);
             connRect = new Rect((i + o + inTangent + outTangent - wh * 0.5f) * 0.5f, wh);
             GUI.Box(connRect, new GUIContent(), (GUIStyle)"flow var 4");

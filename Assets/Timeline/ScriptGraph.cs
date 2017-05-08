@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
@@ -253,7 +254,32 @@ namespace Assets.Timeline
         }
         private void OnClickAddNode(Vector2 mousePosition, string className)
         {
-            nodes.Add(new NodeWindow(className, "New"+className, mousePosition, 250, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode));
+            string namePattern = @"^" + className + @"\s\((\d+)\)$";
+            Regex regex = new Regex(namePattern);
+            string initialName = className;
+            int index = 0;
+            foreach (var name in nodes.Select(n=>n.nodeName))
+            {
+                if (name == className)
+                {
+                    index = 1;
+                }
+                else
+                {
+                    var mc = regex.Matches(name);
+                    int i = 0;
+                    foreach (Match m in mc)
+                    {
+                        i = int.Parse(m.Groups[1].Value);
+                    }
+                    if(i != 0)
+                        index = Math.Max(index, i + 1);
+                }
+            }
+            if(index != 0)
+                initialName = className + " (" + index + ")";
+
+            nodes.Add(new NodeWindow(className, initialName, mousePosition, 250, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode));
         } 
         private NodeWindow SelectNode(Vector2 mousePosition)
         {
@@ -285,6 +311,14 @@ namespace Assets.Timeline
                 ClearConnectionSelection();
             }
 
+        }
+
+        private List<string> Events()
+        {
+            var events =from node in nodes
+                        where node.isEvent
+                        select node.nodeName;
+            return events.ToList();
         }
 
         private void OnClickRemoveConnection(Connection connection)

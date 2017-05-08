@@ -24,7 +24,7 @@ namespace Assets.Timeline.SubWindows
         const float paramMarginX = 6f;
         const float paramMarginY = 3f;
         const float nameMargin = 30f;
-        bool isEvent;
+        public bool isEvent;
         Action<NodeWindow> onClickRemove;
 
         public NodeWindow(String baseClassName, string initialName, Vector2 position, float width, 
