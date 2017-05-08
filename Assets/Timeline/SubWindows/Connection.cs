@@ -15,12 +15,15 @@ namespace Assets.Timeline.SubWindows
         public Action<Connection> onClickRemoveConnection;
         public Rect connRect;
         public bool stopPrev = false;
+        private Func<List<NodeWindow>> getEvents;
+        public List<NodeWindow> conditions = new List<NodeWindow>();
 
-        public Connection(Connection.Point inPoint, Connection.Point outPoint, Action<Connection> onClickRemoveConnection)
+        public Connection(Connection.Point inPoint, Connection.Point outPoint, Action<Connection> onClickRemoveConnection, Func<List<NodeWindow>> getEvents)
         {
             this.inPoint = inPoint;
             this.outPoint = outPoint;
             this.onClickRemoveConnection = onClickRemoveConnection;
+            this.getEvents = getEvents;
         }
 
         Vector2 inTangent = Vector2.left * 80f;
@@ -55,14 +58,25 @@ namespace Assets.Timeline.SubWindows
                 null,
                 2f
                 );
+
             if(stopPrev)
                 GUI.Box(new Rect(o.x, o.y, 100f, 20f), new GUIContent("Stop"), (GUIStyle)"OL Minus");
+
+            for(int j=0; j<conditions.Count; j++)
+            {
+                NodeWindow evt = conditions[j];
+                float condWidth = GUI.skin.label.CalcSize(new GUIContent(evt.nodeName)).x;
+                Vector2 condPos = (i + o + inTangent + outTangent - new Vector2(condWidth, condHeight)) * 0.5f;
+                GUI.Label(new Rect(condPos.x, condPos.y+30f+j*(condHeight+2f), condWidth, condHeight), new GUIContent(evt.nodeName), (GUIStyle)"AssetLabel");
+            }
+
             Vector2 wh = new Vector2(btnWidth, btnHeight);
             connRect = new Rect((i + o + inTangent + outTangent - wh * 0.5f) * 0.5f, wh);
             GUI.Box(connRect, new GUIContent(), (GUIStyle)"flow var 4");
         }
         const float btnWidth = 20f;
         const float btnHeight = 20f;
+        const float condHeight = 20f;
 
         public bool OnGUIEvent(Event e)
         {
@@ -82,9 +96,22 @@ namespace Assets.Timeline.SubWindows
         private void HandleContextMenu()
         {
             GenericMenu menu = new GenericMenu();
-            menu.AddItem(new GUIContent("Stop Previous On Transition"), stopPrev, ()=> stopPrev= !stopPrev);
-            menu.AddItem(new GUIContent("Add Condition"), false, ()=> onClickRemoveConnection(this));
-            menu.AddSeparator("");
+            if (!outPoint.masterNode.isEvent)
+            {
+                menu.AddItem(new GUIContent("Stop Previous On Transition"), stopPrev, () => stopPrev = !stopPrev);
+                foreach (var evt in getEvents())
+                {
+                    menu.AddItem(new GUIContent("Add(Remove) Condition/" + evt.nodeName), conditions.Contains(evt),
+                        () =>
+                        {
+                            if (conditions.Contains(evt))
+                                conditions.Remove(evt);
+                            else
+                                conditions.Add(evt);
+                        });
+                }
+                menu.AddSeparator("");
+            }
             menu.AddItem(new GUIContent("Delete?/Delete"), false, () => onClickRemoveConnection(this));
             menu.ShowAsContext();
         }

@@ -313,11 +313,11 @@ namespace Assets.Timeline
 
         }
 
-        private List<string> Events()
+        private List<NodeWindow> Events()
         {
             var events =from node in nodes
                         where node.isEvent
-                        select node.nodeName;
+                        select node;
             return events.ToList();
         }
 
@@ -332,11 +332,18 @@ namespace Assets.Timeline
                            where conn.inPoint != node.inPoint && conn.outPoint != node.outPoint
                            select conn)
                            .ToList();
+            foreach (var conn in connections)
+            {
+                conn.conditions = (from evt in conn.conditions
+                                   where evt != node
+                                   select evt)
+                                   .ToList();
+            }
         }
 
         private void CreateConnection()
         {
-            connections.Add(new SubWindows.Connection(selectedInPoint, selectedOutPoint, OnClickRemoveConnection));
+            connections.Add(new Connection(selectedInPoint, selectedOutPoint, OnClickRemoveConnection, Events));
         }
 
         private void ClearConnectionSelection()
