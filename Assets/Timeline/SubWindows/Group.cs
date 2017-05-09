@@ -17,16 +17,24 @@ namespace Assets.Timeline.SubWindows
 
         Connection.Point startPoint;
         Connection.Point endPoint;
-        List<NodeWindow> nodes;
+        public List<NodeWindow> nodes;
         List<Connection> connections;
+        Action<Group> onClickDegroup;
+        public List<Connection> Connections {
+            get
+            {
+                return connections.Where(c => c.inPoint != endPoint && c.outPoint != startPoint).ToList();
+            }
+        }
         Func<List<NodeWindow>> getEvents;
         public Group(List<NodeWindow> initialNodes, List<Connection> initialConnections, string initialName, Vector2 position, float width, GUIStyle inPointStyle, GUIStyle outPointStyle, 
-            Action<Connection.Point> onClickInPoint, Action<Connection.Point> onClickOutPoint, Action<NodeWindow> onClickRemove, Action onClickGroup, Func<List<NodeWindow>> getEvents)
+            Action<Connection.Point> onClickInPoint, Action<Connection.Point> onClickOutPoint, Action<NodeWindow> onClickRemove, Action onClickGroup, Func<List<NodeWindow>> getEvents, Action<Group> onClickDegroup)
             :base("", initialName, position, 200f, inPointStyle, outPointStyle, onClickInPoint, onClickOutPoint, onClickRemove, onClickGroup)
         {
             this.nodes = initialNodes;
             this.connections = initialConnections;
             this.getEvents = getEvents;
+            this.onClickDegroup = onClickDegroup;
             foreach(var c in connections)
             {
                 c.onClickRemoveConnection = OnClickRemoveConnection;
@@ -35,6 +43,8 @@ namespace Assets.Timeline.SubWindows
             {
                 n.inPoint.onClickConnectionPoint = OnClickInPoint;
                 n.outPoint.onClickConnectionPoint = OnClickOutPoint;
+                n.style = (GUIStyle)"VCS_StickyNote";
+                n.selectedStyle = (GUIStyle)"VCS_StickyNote";
             }
            if(initialName.Count() != 0)
             {
@@ -55,6 +65,11 @@ namespace Assets.Timeline.SubWindows
         private void OnClickRemoveConnection(Connection c)
         {
             connections.Remove(c);
+        }
+        protected override void AddMenuItems(GenericMenu menu)
+        {
+            base.AddMenuItems(menu);
+            menu.AddItem(new GUIContent("Degroup"), false, ()=>onClickDegroup(this));
         }
 
         private void DrawConnectionPreview(Event e)

@@ -371,7 +371,7 @@ namespace Assets.Timeline
             var kidnappedNodes = nodes.Where(n => n.selected);
             var kidnappedConnections = connections.Where(c => kidnappedNodes.Contains(c.inPoint.masterNode) && kidnappedNodes.Contains(c.outPoint.masterNode));
 
-            nodes.Add(new SubWindows.Group(kidnappedNodes.ToList(), kidnappedConnections.ToList(), GetNewName("Group"), new Vector2(0, 0), 200f, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup, Events));
+            nodes.Add(new SubWindows.Group(kidnappedNodes.ToList(), kidnappedConnections.ToList(), GetNewName("Group"), new Vector2(0, 0), 200f, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup, Events, OnClickDegroup));
             OnClickRemoveNode(null);
         }
         private void OnClickInPoint(Connection.Point inPoint)
@@ -427,6 +427,25 @@ namespace Assets.Timeline
                 }
             }
             nodes = (from n in nodes where !n.selected select n).ToList();
+        }
+        private void OnClickDegroup(SubWindows.Group g)
+        {
+            foreach (var n in g.nodes)
+            {
+                n.inPoint.onClickConnectionPoint = OnClickInPoint;
+                n.outPoint.onClickConnectionPoint = OnClickOutPoint;
+                n.ResetStyle();
+            }
+            foreach (var c in g.Connections)
+            {
+                c.onClickRemoveConnection = OnClickRemoveConnection;
+            }
+            nodes.AddRange(g.nodes);
+            connections.AddRange(g.Connections);
+            nodes.Remove(g);
+            connections = (from c in connections
+                           where c.inPoint.masterNode != g && c.outPoint.masterNode != g
+                           select c).ToList();
         }
 
         private void CreateConnection()

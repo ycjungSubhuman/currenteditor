@@ -43,25 +43,19 @@ namespace Assets.Timeline.SubWindows
             if (baseClassName.Contains("Event"))
             {
                 t = Type.GetType("Assets.Core.Event." + baseClassName);
-                style = (GUIStyle)"flow node 2";
-                selectedStyle = (GUIStyle)"flow node 2 on";
                 isEvent = true;
             }
             else if (baseClassName=="")
             {
                 style = (GUIStyle)"flow node 0";
-                selectedStyle = (GUIStyle)"flow node 0 on";
-                isEvent = false;
                 isWorkspace = true;
             }
             else //Handler
             {
                 t = Type.GetType("Assets.Core.Handler." + baseClassName);
-                style = (GUIStyle)"flow node 1";
-                selectedStyle = (GUIStyle)"flow node 1 on";
                 isEvent = false;
-
             }
+            ResetStyle();
 
             if (t != null)
             {
@@ -76,6 +70,24 @@ namespace Assets.Timeline.SubWindows
             rect = new Rect(position.x, position.y, width, 40f + paramPairs.Count*20f);
             inPoint = new Connection.Point(this, Connection.Point.Type.IN, inPointStyle, onClickInPoint);
             outPoint = new Connection.Point(this, Connection.Point.Type.OUT, outPointStyle, onClickOutPoint);
+        }
+        public void ResetStyle()
+        {
+            if (baseClassName.Contains("Event"))
+            {
+                style = (GUIStyle)"flow node 2";
+                selectedStyle = (GUIStyle)"flow node 2 on";
+            }
+            else if (baseClassName=="")
+            {
+                style = (GUIStyle)"flow node 0";
+                selectedStyle = (GUIStyle)"flow node 0 on";
+            }
+            else //Handler
+            {
+                style = (GUIStyle)"flow node 1";
+                selectedStyle = (GUIStyle)"flow node 1 on";
+            }
         }
 
         public virtual void Drag(Vector2 delta)
@@ -142,8 +154,7 @@ namespace Assets.Timeline.SubWindows
                         GUI.changed = true;
                         selected = true;
                         GenericMenu menu = new GenericMenu();
-                        menu.AddItem(new GUIContent("Delete"), false, () => OnClickDelete());
-                        menu.AddItem(new GUIContent("Make Group"), false, () => onClickGroup());
+                        AddMenuItems(menu);
                         menu.ShowAsContext();
                     }
                     break;
@@ -158,6 +169,12 @@ namespace Assets.Timeline.SubWindows
 
             return false;
         }
+        protected virtual void AddMenuItems(GenericMenu menu)
+        {
+            menu.AddItem(new GUIContent("Delete Node?/Delete"), false, () => OnClickDelete());
+            menu.AddItem(new GUIContent("Make Group"), false, () => onClickGroup());
+        }
+
         private void OnClickDelete()
         {
             onClickRemove(this);
