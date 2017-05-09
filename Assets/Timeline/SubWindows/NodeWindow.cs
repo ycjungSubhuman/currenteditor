@@ -28,6 +28,9 @@ namespace Assets.Timeline.SubWindows
         public bool isEvent;
         public bool isWorkspace;
         public bool selected = false;
+        public int linkDialogIndex = 0;
+        public bool linkDialogOn;
+        public Rect linkDialogRect;
         Action<NodeWindow> onClickRemove;
         Action onClickGroup;
 
@@ -107,6 +110,8 @@ namespace Assets.Timeline.SubWindows
             DrawTitle();
             DrawName();
             DrawParams();
+            if(linkDialogOn)
+                DrawLinkDialog();
         }
 
         protected virtual void DrawName()
@@ -121,6 +126,7 @@ namespace Assets.Timeline.SubWindows
             GUI.Label(new Rect(rect.x, rect.y, rect.width, 18f), new GUIContent(baseClassName), titleStyle);
         }
 
+        const float buttonWidth = 30f;
         protected virtual void DrawParams()
         {
             for(int i=0; i<paramPairs.Count; i++)
@@ -128,11 +134,24 @@ namespace Assets.Timeline.SubWindows
                 string name = paramPairs[i].Key;
                 string value = paramPairs[i].Value;
                 string newValue = value;
-                GUI.Label(new Rect(rect.x+paramMarginX, rect.y+40f+i*20f, rect.width/2 -2*paramMarginX, 16f), new GUIContent(name));
-                newValue = GUI.TextField(new Rect(rect.x + paramMarginX + rect.width / 2, rect.y + 40f+i*20f, rect.width / 2 - 2 * paramMarginX, 16f), newValue);
+                Rect labelRect = new Rect(rect.x + paramMarginX, rect.y + 40f + i * 20f, rect.width / 3 - 2 * paramMarginX, 16f);
+                Rect textRect = new Rect(rect.x + paramMarginX + rect.width / 3, rect.y + 40f + i * 20f, rect.width *2 / 3 - 2 * paramMarginX - buttonWidth, 16f);
+                GUI.Label(labelRect, new GUIContent(name));
+                newValue = GUI.TextField(textRect, newValue);
+                if(GUI.Button(new Rect(textRect.x + textRect.width, textRect.y, buttonWidth, 18f), new GUIContent("Lnk")))
+                {
+                    linkDialogIndex = i;
+                    linkDialogOn = true;
+                    linkDialogRect = new Rect(textRect.x + textRect.width, textRect.y, 200f, 300f);
+                }
                 paramPairs[i] = new KeyValuePair<string, string>(name, newValue);
             }
         }
+        private void DrawLinkDialog()
+        {
+            GUI.Box(linkDialogRect, new GUIContent());
+        }
+
         public void Select(bool selected)
         {
             this.selected = selected;
