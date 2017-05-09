@@ -19,32 +19,38 @@ namespace Assets.Timeline.SubWindows
         public List<KeyValuePair<string, string>> paramPairs = new List<KeyValuePair<string, string>>();
 
         public GUIStyle style;
+        public GUIStyle selectedStyle;
         private string baseClassName;
         public string nodeName;
         const float paramMarginX = 6f;
         const float paramMarginY = 3f;
         const float nameMargin = 30f;
         public bool isEvent;
+        public bool selected = false;
         Action<NodeWindow> onClickRemove;
+        Action onClickGroup;
 
         public NodeWindow(String baseClassName, string initialName, Vector2 position, float width, 
             GUIStyle inPointStyle, 
-            GUIStyle outPointStyle, Action<Connection.Point> onClickInPoint, Action<Connection.Point> onClickOutPoint, Action<NodeWindow> onClickRemove)
+            GUIStyle outPointStyle, Action<Connection.Point> onClickInPoint, Action<Connection.Point> onClickOutPoint, Action<NodeWindow> onClickRemove, Action onClickGroup)
         {
             Type t = null;
             this.baseClassName = baseClassName;
             this.onClickRemove = onClickRemove;
+            this.onClickGroup = onClickGroup;
             nodeName = initialName;
             if (baseClassName.Contains("Event"))
             {
                 t = Type.GetType("Assets.Core.Event." + baseClassName);
                 style = (GUIStyle)"flow node 2";
+                selectedStyle = (GUIStyle)"flow node 2 on";
                 isEvent = true;
             }
             else
             {
                 t = Type.GetType("Assets.Core.Handler." + baseClassName);
                 style = (GUIStyle)"flow node 1";
+                selectedStyle = (GUIStyle)"flow node 1 on";
                 isEvent = false;
             }
 
@@ -70,7 +76,10 @@ namespace Assets.Timeline.SubWindows
             if(!isEvent)
                 inPoint.Draw();
             outPoint.Draw();
-            GUI.Box(rect, "", style);
+            if (selected)
+                GUI.Box(rect, "", selectedStyle);
+            else
+                GUI.Box(rect, "", style);
             GUIStyle titleStyle = new GUIStyle();
             titleStyle.alignment = TextAnchor.MiddleCenter;
             GUI.Label(new Rect(rect.x, rect.y, rect.width, 18f), new GUIContent(baseClassName), titleStyle);
@@ -91,29 +100,29 @@ namespace Assets.Timeline.SubWindows
                 paramPairs[i] = new KeyValuePair<string, string>(name, newValue);
             }
         }
+        public void Select(bool selected)
+        {
+            this.selected = selected;
+        }
 
         public bool ProcessEvents(Event e)
         {
             switch(e.type)
             {
-                case EventType.MouseDrag:
-                    if(dragged)
-                    {
-                        Drag(e.delta);
-                        e.Use();
-                        return true;
-                    }
-                    break;
                 case EventType.MouseDown:
                     if(e.button == 0 && MouseOverlapped(e.mousePosition))
                     {
                         GUI.changed = true;
                         dragged = true;
+                        selected = true;
                     }
                     if(e.button == 1 && MouseOverlapped(e.mousePosition))
                     {
+                        GUI.changed = true;
+                        selected = true;
                         GenericMenu menu = new GenericMenu();
                         menu.AddItem(new GUIContent("Delete"), false, () => OnClickDelete());
+                        menu.AddItem(new GUIContent("Make Group"), false, () => onClickGroup());
                         menu.ShowAsContext();
                     }
                     break;

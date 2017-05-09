@@ -19,10 +19,14 @@ namespace Assets.Timeline
         GUIStyle nodeStyle;
         GUIStyle inPointStyle;
         GUIStyle outPointStyle;
+        GUIStyle selectBoxStyle = null;
         NodeWindow dragged;
 
         Vector2 offset;
         Vector2 drag;
+
+        Vector2 selectDragStart;
+        bool selectDragOn;
 
         Connection.Point selectedInPoint;
         Connection.Point selectedOutPoint;
@@ -59,6 +63,8 @@ namespace Assets.Timeline
 
         private void OnGUI()
         {
+            if(selectBoxStyle == null)
+                selectBoxStyle = (GUIStyle)"TL SelectionButton PreDropGlow";
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
             HandleSelector();
             DrawGrid(20, 0.2f, Color.gray);
@@ -66,6 +72,8 @@ namespace Assets.Timeline
             HandleNodes();
             HandleConnections();
             OnGUIEvent(Event.current);
+            if (selectDragOn)
+                SelectDrag(Event.current);
             DrawConnectionPreview(Event.current);
             EditorGUILayout.EndVertical();
 
@@ -95,6 +103,30 @@ namespace Assets.Timeline
 
             Handles.color = Color.white;
             Handles.EndGUI();
+        }
+        private void SelectDrag(Event e)
+        {
+            float posX = Math.Min(e.mousePosition.x, selectDragStart.x);
+            float posY = Math.Min(e.mousePosition.y, selectDragStart.y);
+            float width = Math.Abs(e.mousePosition.x - selectDragStart.x);
+            float height = Math.Abs(e.mousePosition.y - selectDragStart.y);
+
+            Rect selectArea = new Rect(posX, posY, width, height);
+
+            foreach (var node in nodes)
+            {
+                if (selectArea.Contains(new Vector2(node.rect.xMin, node.rect.yMin)) && 
+                    selectArea.Contains(new Vector2(node.rect.xMax, node.rect.yMax)))
+                {
+                    node.Select(true);
+                }
+                else
+                {
+                    node.Select(false);
+                }
+            }
+            GUI.Box(selectArea, new GUIContent(), selectBoxStyle);
+            GUI.changed = true;
         }
 
         private void DrawConnectionPreview(Event e)
@@ -189,6 +221,18 @@ namespace Assets.Timeline
         {
             drag = Vector2.zero;
             //mouse on a node
+
+
+            if (e.type == EventType.MouseDown && !nodes.Any(n => n.MouseOverlapped(e.mousePosition) && n.selected))
+            {
+                foreach (var n in nodes)
+                {
+                    if (!n.MouseOverlapped(e.mousePosition))
+                        n.Select(false);
+                    GUI.changed = true;
+                }
+            }
+
             foreach (var node in nodes)
             {
                 GUI.changed = node.ProcessEvents(e);
@@ -205,7 +249,22 @@ namespace Assets.Timeline
                 GUI.changed = true;
             }
 
-            //mouse on a connection - Menu
+            if(!selectDragOn)
+            {
+                switch (e.type)
+                {
+                    case EventType.MouseDrag:
+                        foreach (var n in nodes)
+                        {
+                            if (n.selected)
+                            {
+                                n.Drag(e.delta);
+                                GUI.changed = true;
+                            }
+                        }
+                        break;
+                }
+            }
 
             //mouse on empty space
             if (!nodes.Any(n => n.MouseOverlapped(e.mousePosition)) && 
@@ -214,12 +273,18 @@ namespace Assets.Timeline
                 switch (e.type)
                 {
                     case EventType.MouseDown:
+                        if(e.button == 0)
+                        {
+                            selectDragOn = true;
+                            selectDragStart = e.mousePosition;
+                        }
                         if (e.button == 1) //right
                         {
                             HandleContextMenu(e.mousePosition);
                         }
                         break;
                     case EventType.MouseUp:
+                        selectDragOn = false;
                         break;
                 }
             }
@@ -279,7 +344,7 @@ namespace Assets.Timeline
             if(index != 0)
                 initialName = className + " (" + index + ")";
 
-            nodes.Add(new NodeWindow(className, initialName, mousePosition, 250, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode));
+            nodes.Add(new NodeWindow(className, initialName, mousePosition, 250, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup));
         } 
         private NodeWindow SelectNode(Vector2 mousePosition)
         {
@@ -289,6 +354,10 @@ namespace Assets.Timeline
 
             if (selected.Count() == 0) return null;
             else return selected.First();
+        }
+        private void OnClickGroup()
+        {
+
         }
         private void OnClickInPoint(Connection.Point inPoint)
         {
@@ -327,18 +396,22 @@ namespace Assets.Timeline
         }
         private void OnClickRemoveNode(NodeWindow node)
         {
-            nodes.Remove(node);
-            connections = (from conn in connections
-                           where conn.inPoint != node.inPoint && conn.outPoint != node.outPoint
-                           select conn)
-                           .ToList();
-            foreach (var conn in connections)
+            var removedNodes = from n in nodes where n.selected select n;
+            foreach (var n in removedNodes)
             {
-                conn.conditions = (from evt in conn.conditions
-                                   where evt != node
-                                   select evt)
-                                   .ToList();
+                connections = (from conn in connections
+                               where conn.inPoint != n.inPoint && conn.outPoint != n.outPoint
+                               select conn)
+                               .ToList();
+                foreach (var conn in connections)
+                {
+                    conn.conditions = (from evt in conn.conditions
+                                       where evt != n
+                                       select evt)
+                                       .ToList();
+                }
             }
+            nodes = (from n in nodes where !n.selected select n).ToList();
         }
 
         private void CreateConnection()
