@@ -96,7 +96,7 @@ namespace Assets.Timeline.SubWindows
         private void HandleContextMenu()
         {
             GenericMenu menu = new GenericMenu();
-            if (!outPoint.masterNode.isEvent)
+            if (outPoint.masterNode != null && !outPoint.masterNode.isEvent)
             {
                 menu.AddItem(new GUIContent("Stop Previous On Transition"), stopPrev, () => stopPrev = !stopPrev);
                 foreach (var evt in getEvents())
@@ -123,8 +123,8 @@ namespace Assets.Timeline.SubWindows
             public Rect rect;
             public Type type;
             public NodeWindow masterNode;
-            private GUIStyle style;
-            private Action<Connection.Point> onClickConnectionPoint;
+            public GUIStyle style;
+            public Action<Connection.Point> onClickConnectionPoint;
 
             public Point(NodeWindow masterNode, Point.Type type, GUIStyle style, Action<Connection.Point> onClick)
             {
@@ -135,7 +135,7 @@ namespace Assets.Timeline.SubWindows
                 rect = new Rect(0, 0, 10f, 20f);
             }
 
-            public void Draw()
+            public virtual void Draw()
             {
                 rect.y = masterNode.rect.y + (masterNode.rect.height * 0.5f) - this.rect.height * 0.5f;
 
@@ -152,6 +152,38 @@ namespace Assets.Timeline.SubWindows
                 if(GUI.Button(this.rect, "", style))
                 {
                     if(onClickConnectionPoint != null)
+                    {
+                        onClickConnectionPoint(this);
+                    }
+                }
+            }
+        }
+
+        public class GroupPoint : Point
+        {
+            NodeWindow groupNode;
+            public GroupPoint(NodeWindow groupNode, Type type, GUIStyle style, Action<Point> onClick) : base(null, type, style, onClick)
+            {
+                this.groupNode = groupNode;
+            }
+
+            public override void Draw()
+            {
+                rect.y = groupNode.rect.y + (groupNode.rect.height * 0.5f) - this.rect.height * 0.5f;
+
+                switch (type)
+                {
+                    case Type.IN:
+                        rect.x = groupNode.rect.x + groupNode.rect.width - this.rect.width;
+                        break;
+                    case Type.OUT:
+                        rect.x = groupNode.rect.x;
+                        break;
+                }
+
+                if (GUI.Button(this.rect, "", style))
+                {
+                    if (onClickConnectionPoint != null)
                     {
                         onClickConnectionPoint(this);
                     }

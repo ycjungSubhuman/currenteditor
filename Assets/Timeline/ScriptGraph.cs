@@ -77,7 +77,7 @@ namespace Assets.Timeline
             DrawConnectionPreview(Event.current);
             EditorGUILayout.EndVertical();
 
-            if (GUI.changed) Repaint();
+            Repaint();
         }
 
         private void DrawGrid(float gridSpacing, float gridOpacity, Color gridColor)
@@ -243,6 +243,11 @@ namespace Assets.Timeline
                 GUI.changed = conn.OnGUIEvent(e);
             }
 
+            if(e.type == EventType.MouseDown)
+            {
+                ClearConnectionSelection();
+            }
+
             if (e.keyCode == KeyCode.Return || e.type == EventType.MouseDown)
             {
                 GUI.FocusControl(null);
@@ -319,13 +324,19 @@ namespace Assets.Timeline
         }
         private void OnClickAddNode(Vector2 mousePosition, string className)
         {
-            string namePattern = @"^" + className + @"\s\((\d+)\)$";
+            string initialName = GetNewName(className);
+            nodes.Add(new NodeWindow(className, initialName, mousePosition, 250, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup));
+        }
+
+        private string GetNewName(string baseName)
+        {
+            string namePattern = @"^" + baseName + @"\s\((\d+)\)$";
             Regex regex = new Regex(namePattern);
-            string initialName = className;
+            string initialName = baseName;
             int index = 0;
             foreach (var name in nodes.Select(n=>n.nodeName))
             {
-                if (name == className)
+                if (name == baseName)
                 {
                     index = 1;
                 }
@@ -342,10 +353,10 @@ namespace Assets.Timeline
                 }
             }
             if(index != 0)
-                initialName = className + " (" + index + ")";
+                initialName = baseName + " (" + index + ")";
+            return initialName;
+        }
 
-            nodes.Add(new NodeWindow(className, initialName, mousePosition, 250, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup));
-        } 
         private NodeWindow SelectNode(Vector2 mousePosition)
         {
             var selected = from n in nodes
@@ -357,7 +368,11 @@ namespace Assets.Timeline
         }
         private void OnClickGroup()
         {
+            var kidnappedNodes = nodes.Where(n => n.selected);
+            var kidnappedConnections = connections.Where(c => kidnappedNodes.Contains(c.inPoint.masterNode) && kidnappedNodes.Contains(c.outPoint.masterNode));
 
+            nodes.Add(new SubWindows.Group(kidnappedNodes.ToList(), kidnappedConnections.ToList(), GetNewName("Group"), new Vector2(0, 0), 200f, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup, Events));
+            OnClickRemoveNode(null);
         }
         private void OnClickInPoint(Connection.Point inPoint)
         {
@@ -416,7 +431,8 @@ namespace Assets.Timeline
 
         private void CreateConnection()
         {
-            connections.Add(new Connection(selectedInPoint, selectedOutPoint, OnClickRemoveConnection, Events));
+            if(!connections.Any(c => c.inPoint == selectedInPoint && c.outPoint == selectedOutPoint))
+                connections.Add(new Connection(selectedInPoint, selectedOutPoint, OnClickRemoveConnection, Events));
         }
 
         private void ClearConnectionSelection()

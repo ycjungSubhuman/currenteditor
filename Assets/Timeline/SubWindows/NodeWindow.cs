@@ -26,6 +26,7 @@ namespace Assets.Timeline.SubWindows
         const float paramMarginY = 3f;
         const float nameMargin = 30f;
         public bool isEvent;
+        public bool isWorkspace;
         public bool selected = false;
         Action<NodeWindow> onClickRemove;
         Action onClickGroup;
@@ -46,18 +47,29 @@ namespace Assets.Timeline.SubWindows
                 selectedStyle = (GUIStyle)"flow node 2 on";
                 isEvent = true;
             }
-            else
+            else if (baseClassName=="")
+            {
+                style = (GUIStyle)"flow node 0";
+                selectedStyle = (GUIStyle)"flow node 0 on";
+                isEvent = false;
+                isWorkspace = true;
+            }
+            else //Handler
             {
                 t = Type.GetType("Assets.Core.Handler." + baseClassName);
                 style = (GUIStyle)"flow node 1";
                 selectedStyle = (GUIStyle)"flow node 1 on";
                 isEvent = false;
+
             }
 
-            IDefaultParamProvider p = Activator.CreateInstance(t) as IDefaultParamProvider;
-            foreach(var pair in p.GetDefaultParams())
+            if (t != null)
             {
-                paramPairs.Add(pair);
+                IDefaultParamProvider p = Activator.CreateInstance(t) as IDefaultParamProvider;
+                foreach (var pair in p.GetDefaultParams())
+                {
+                    paramPairs.Add(pair);
+                }
             }
 
             style.border = new RectOffset(12, 12, 12, 12);
@@ -66,12 +78,12 @@ namespace Assets.Timeline.SubWindows
             outPoint = new Connection.Point(this, Connection.Point.Type.OUT, outPointStyle, onClickOutPoint);
         }
 
-        public void Drag(Vector2 delta)
+        public virtual void Drag(Vector2 delta)
         {
             rect.position += delta;
         }
 
-        public void Draw()
+        public virtual void Draw()
         {
             if(!isEvent)
                 inPoint.Draw();
@@ -80,15 +92,24 @@ namespace Assets.Timeline.SubWindows
                 GUI.Box(rect, "", selectedStyle);
             else
                 GUI.Box(rect, "", style);
-            GUIStyle titleStyle = new GUIStyle();
-            titleStyle.alignment = TextAnchor.MiddleCenter;
-            GUI.Label(new Rect(rect.x, rect.y, rect.width, 18f), new GUIContent(baseClassName), titleStyle);
-
-            nodeName = GUI.TextField(new Rect(rect.x + nameMargin, rect.y+20f, rect.width - 2*nameMargin, 18f), nodeName);
+            DrawTitle();
+            DrawName();
             DrawParams();
         }
 
-        private void DrawParams()
+        protected virtual void DrawName()
+        {
+            nodeName = GUI.TextField(new Rect(rect.x + nameMargin, rect.y+20f, rect.width - 2*nameMargin, 18f), nodeName);
+        }
+
+        protected virtual void DrawTitle()
+        {
+            GUIStyle titleStyle = new GUIStyle();
+            titleStyle.alignment = TextAnchor.MiddleCenter;
+            GUI.Label(new Rect(rect.x, rect.y, rect.width, 18f), new GUIContent(baseClassName), titleStyle);
+        }
+
+        protected virtual void DrawParams()
         {
             for(int i=0; i<paramPairs.Count; i++)
             {
@@ -105,7 +126,7 @@ namespace Assets.Timeline.SubWindows
             this.selected = selected;
         }
 
-        public bool ProcessEvents(Event e)
+        public virtual bool ProcessEvents(Event e)
         {
             switch(e.type)
             {
