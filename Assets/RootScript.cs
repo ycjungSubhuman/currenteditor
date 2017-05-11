@@ -21,7 +21,7 @@ public class RootScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         InitMetaData();
-        Test7();
+        Test1_2();
 	}
 
     private void Test1()
@@ -37,6 +37,36 @@ public class RootScript : MonoBehaviour {
                 .Add("Duration", "0.5");
             HandlerFuture hf = new MoveConstant(newParams);
             hf.SetAfter((_) => new MoveConstant(Params.Empty.Add("Target", "test1")));
+            return hf;
+        }
+        );
+        p.Handler.Begin();
+    }
+
+    private void Test1_2()
+    {
+        //On Pressed Z, test1 will (move right + move down) for 0.5 secs after moving up for 0.5 secs.
+        EventPromise p = new KeyDownEvent(KeyCode.Z);
+        p.StartPollUpdateGlobal();
+        p.Handler.SetNewAfter((ps) =>
+        {
+            Params newParams = Params.Empty
+                .Add("Target", "test1")
+                .Add("Velocity", new Vector3(0.0f, 0.01f, 0.0f).GetSerialized())
+                .Add("Duration", "0.5");
+            HandlerFuture hf = new MoveConstant(newParams);
+            Params rightParams = Params.Empty
+                .Add("Target", "test1")
+                .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f).GetSerialized())
+                .Add("Duration", "0.5");
+            Params downParams = Params.Empty
+                .Add("Target", "test1")
+                .Add("Velocity", new Vector3(0.0f, -0.01f, 0.0f).GetSerialized())
+                .Add("Duration", "0.5");
+            EventPromise pright = new KeyUpEvent(KeyCode.RightArrow);
+            EventPromise pdown = new KeyUpEvent(KeyCode.DownArrow);
+            hf.AddExternalCondition(pright, (_) => new MoveConstant(rightParams), false);
+            hf.AddExternalCondition(pdown, (_) => new MoveConstant(downParams), false);
             return hf;
         }
         );

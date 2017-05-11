@@ -15,7 +15,7 @@ namespace Assets.Timeline.Utility
             return String.Format("{0:0.000}|{1:0.000}|{2:0.000}",input.x, input.y, input.z);
         }
 
-        private static string pattern = @"^([0-9]+(?:\.[0-9]+)?)\|([0-9]+(?:\.[0-9]+)?)\|([0-9]+(?:\.[0-9]+)?)$";
+        private static string pattern = @"^([-]?[0-9]+(?:\.[0-9]+)?)\|([-]?[0-9]+(?:\.[0-9]+)?)\|([-]?[0-9]+(?:\.[0-9]+)?)$";
         public static Vector3 SerializedToVector3(string serialized)
         {
             Regex regex = new Regex(pattern);

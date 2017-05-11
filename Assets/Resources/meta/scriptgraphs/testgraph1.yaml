@@ -2,24 +2,28 @@ nodes:
 - name: Group
   base: ''
   position:
-    x: 125
-    y: 139
+    x: 164
+    y: 115
   succ: []
   members:
   - name: DoNothing (1)
     base: DoNothing
     params: {}
     position:
-      x: 225
-      y: 283
+      x: 264
+      y: 259
     succ: []
   - name: DoNothing (3) (1)
     base: DoNothing
     params: {}
     position:
-      x: 155
-      y: 159
-    succ: []
+      x: 194
+      y: 135
+    succ:
+    - dest: DoNothing (1)
+      condition: []
+  startMember: DoNothing (3) (1)
+  endMember: DoNothing (3) (1)
 - name: DoNothing (3)
   base: DoNothing
   params: {}

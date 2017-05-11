@@ -129,12 +129,19 @@ namespace Assets.Timeline.SubWindows
             var duplicates = from c in connections
                              where c.outPoint == startPoint
                              select c;
+            bool changed = false;
             foreach (var d in duplicates)
             {
-                connections.Remove(d);
+                if (selectedInPoint != null)
+                {
+                    d.inPoint = selectedInPoint;
+                    ClearConnectionSelection();
+                    changed = true;
+                }
             }
 
-            OnClickOutPoint(startPoint);
+            if(!changed)
+                OnClickOutPoint(startPoint);
         }
 
         private void OnClickEndPoint(Connection.Point endPoint)
@@ -142,12 +149,19 @@ namespace Assets.Timeline.SubWindows
             var duplicates = from c in connections
                              where c.inPoint == endPoint
                              select c;
+            bool changed = false;
             foreach (var d in duplicates)
             {
-                connections.Remove(d);
+                if(selectedOutPoint != null)
+                {
+                    d.outPoint = selectedOutPoint;
+                    ClearConnectionSelection();
+                    changed = true;
+                }
             }
 
-            OnClickInPoint(endPoint);
+            if(!changed)
+                OnClickInPoint(endPoint);
         }
 
         private void OnClickInPoint(Connection.Point inPoint)
@@ -193,8 +207,21 @@ namespace Assets.Timeline.SubWindows
 
         private void CreateGroupInterfaceConnection()
         {
-            if(!connections.Any(c => c.inPoint == selectedInPoint && c.outPoint == selectedOutPoint))
-                connections.Add(new Connection(selectedInPoint, selectedOutPoint, OnClickRemoveConnection, getEvents));
+            if (!connections.Any(c => c.inPoint == selectedInPoint && c.outPoint == selectedOutPoint))
+            {
+                var dupStart = (from c in connections
+                                where c.outPoint == startPoint && c.inPoint == selectedInPoint
+                                select c).SingleOrDefault();
+                var dupEnd = (from c in connections
+                              where c.inPoint == endPoint && c.outPoint == selectedOutPoint
+                              select c).SingleOrDefault();
+                if (dupStart == null && dupEnd == null)
+                    connections.Add(new Connection(selectedInPoint, selectedOutPoint, OnClickRemoveConnection, getEvents));
+                else if (dupEnd == null)
+                    dupStart.inPoint = selectedInPoint;
+                else
+                    dupEnd.outPoint = selectedOutPoint;
+            }
             save();
         }
 
