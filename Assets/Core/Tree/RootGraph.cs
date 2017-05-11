@@ -6,7 +6,7 @@ using System.Text;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace Assets.Core.Graph
+namespace Assets.Core.Tree
 {
     class RootGraph
     {

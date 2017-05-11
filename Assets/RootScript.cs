@@ -1,6 +1,6 @@
 ﻿using Assets.Core;
 using Assets.Core.Event;
-using Assets.Core.Graph;
+using Assets.Core.Tree;
 using Assets.Core.Handler;
 using Assets.Midi;
 using Assets.Timeline.Utility;
@@ -15,8 +15,8 @@ public class RootScript : MonoBehaviour {
 
     private Dictionary<string, Clip> clips = new Dictionary<string, Clip>();
     public Dictionary<string, Clip> Clips { get { return clips; } }
-    private Dictionary<string, ClipGraph> clipGraphs = new Dictionary<string, ClipGraph>();
-    private Dictionary<string, ScriptGraph> scriptGraphs = new Dictionary<string, ScriptGraph>();
+    private Dictionary<string, ClipTree> clipGraphs = new Dictionary<string, ClipTree>();
+    private Dictionary<string, ScriptTree> scriptGraphs = new Dictionary<string, ScriptTree>();
 
 	// Use this for initialization
 	void Start () {
@@ -196,7 +196,7 @@ public class RootScript : MonoBehaviour {
             //load clip
             var clipText = Resources.Load<TextAsset>("meta/"+clip.Path);
             var clipDocStream = new StringReader(clipText.text);
-            ClipGraph clipGraph = ClipGraph.Construct(clipDocStream);
+            ClipTree clipGraph = ClipTree.Construct(clipDocStream);
             var ser = new YamlDotNet.Serialization.Serializer();
 
             clipGraphs.Add(clip.Name, clipGraph);
@@ -221,7 +221,7 @@ public class RootScript : MonoBehaviour {
             var graphText = Resources.Load<TextAsset>("meta/"+graph.Path);
             Debug.Log(graphText);
             var graphDocStream = new StringReader(graphText.text);
-            ScriptGraph scriptGraph = ScriptGraph.Construct(graphDocStream);
+            ScriptTree scriptGraph = ScriptTree.Construct(graphDocStream);
             var ser = new YamlDotNet.Serialization.Serializer();
 
             scriptGraphs.Add(graph.Name, scriptGraph);

@@ -20,8 +20,9 @@ namespace Assets.Timeline.SubWindows
 
         public GUIStyle style;
         public GUIStyle selectedStyle;
-        private string baseClassName;
+        public string baseClassName;
         public string nodeName;
+        public string editNodeName;
         const float paramMarginX = 6f;
         const float paramMarginY = 3f;
         const float nameMargin = 30f;
@@ -33,16 +34,19 @@ namespace Assets.Timeline.SubWindows
         public Rect linkDialogRect;
         Action<NodeWindow> onClickRemove;
         Action onClickGroup;
+        Func<string, NodeWindow, string> getNewName;
 
         public NodeWindow(String baseClassName, string initialName, Vector2 position, float width, 
             GUIStyle inPointStyle, 
-            GUIStyle outPointStyle, Action<Connection.Point> onClickInPoint, Action<Connection.Point> onClickOutPoint, Action<NodeWindow> onClickRemove, Action onClickGroup)
+            GUIStyle outPointStyle, Action<Connection.Point> onClickInPoint, Action<Connection.Point> onClickOutPoint, Action<NodeWindow> onClickRemove, Action onClickGroup, Func<string, NodeWindow, string> getNewName)
         {
             Type t = null;
             this.baseClassName = baseClassName;
             this.onClickRemove = onClickRemove;
             this.onClickGroup = onClickGroup;
+            this.getNewName = getNewName;
             nodeName = initialName;
+            editNodeName = nodeName;
             if (baseClassName.Contains("Event"))
             {
                 t = Type.GetType("Assets.Core.Event." + baseClassName);
@@ -116,7 +120,7 @@ namespace Assets.Timeline.SubWindows
 
         protected virtual void DrawName()
         {
-            nodeName = GUI.TextField(new Rect(rect.x + nameMargin, rect.y+20f, rect.width - 2*nameMargin, 18f), nodeName);
+            editNodeName = GUI.TextField(new Rect(rect.x + nameMargin, rect.y+20f, rect.width - 2*nameMargin, 18f), editNodeName);
         }
 
         protected virtual void DrawTitle()
@@ -157,6 +161,12 @@ namespace Assets.Timeline.SubWindows
             this.selected = selected;
         }
 
+        protected void SaveName()
+        {
+            this.nodeName = getNewName(editNodeName, this);
+            editNodeName = nodeName;
+        }
+
         public virtual bool ProcessEvents(Event e)
         {
             switch(e.type)
@@ -184,6 +194,10 @@ namespace Assets.Timeline.SubWindows
                         dragged = false;
                     }
                     break;
+            }
+            if(e.type == EventType.MouseDown || e.keyCode == KeyCode.Return || e.keyCode == KeyCode.Tab)
+            {
+                SaveName();
             }
 
             return false;

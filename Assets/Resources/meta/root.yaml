@@ -1,7 +1,7 @@
 # overall structure of a Current project
 scriptgraphs:
-  - name: testgraph2
-    path: scriptgraphs/testgraph2
+  - name: testgraph1
+    path: scriptgraphs/testgraph1
 clips:
   - name: testclip1
     path: clips/testclip1

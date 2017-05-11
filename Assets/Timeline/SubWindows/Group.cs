@@ -15,24 +15,29 @@ namespace Assets.Timeline.SubWindows
         Connection.Point selectedInPoint = null;
         Connection.Point selectedOutPoint = null;
 
-        Connection.Point startPoint;
-        Connection.Point endPoint;
+        public Connection.Point startPoint;
+        public Connection.Point endPoint;
         public List<NodeWindow> nodes;
-        List<Connection> connections;
+        public List<Connection> connections;
         Action<Group> onClickDegroup;
-        public List<Connection> Connections {
+        Action save;
+        public List<Connection> InterConnections {
             get
             {
                 return connections.Where(c => c.inPoint != endPoint && c.outPoint != startPoint).ToList();
             }
         }
         Func<List<NodeWindow>> getEvents;
+        Func<string, NodeWindow, string> getNewName;
         public Group(List<NodeWindow> initialNodes, List<Connection> initialConnections, string initialName, Vector2 position, float width, GUIStyle inPointStyle, GUIStyle outPointStyle, 
-            Action<Connection.Point> onClickInPoint, Action<Connection.Point> onClickOutPoint, Action<NodeWindow> onClickRemove, Action onClickGroup, Func<List<NodeWindow>> getEvents, Action<Group> onClickDegroup)
-            :base("", initialName, position, 200f, inPointStyle, outPointStyle, onClickInPoint, onClickOutPoint, onClickRemove, onClickGroup)
+            Action<Connection.Point> onClickInPoint, Action<Connection.Point> onClickOutPoint, Action<NodeWindow> onClickRemove, Action onClickGroup, Func<List<NodeWindow>> getEvents, Action<Group> onClickDegroup, Action save, Func<string, NodeWindow, string> getNewName)
+            :base("", initialName, position, 200f, inPointStyle, outPointStyle, onClickInPoint, onClickOutPoint, onClickRemove, onClickGroup, getNewName)
         {
             this.nodes = initialNodes;
             this.connections = initialConnections;
+            this.getNewName = getNewName;
+            this.save = save;
+            this.isWorkspace = true;
             this.getEvents = getEvents;
             this.onClickDegroup = onClickDegroup;
             foreach(var c in connections)
@@ -62,9 +67,10 @@ namespace Assets.Timeline.SubWindows
             }
         }
 
-        private void OnClickRemoveConnection(Connection c)
+        public void OnClickRemoveConnection(Connection c)
         {
             connections.Remove(c);
+            save();
         }
         protected override void AddMenuItems(GenericMenu menu)
         {
@@ -176,6 +182,7 @@ namespace Assets.Timeline.SubWindows
         {
             if(!connections.Any(c => c.inPoint == selectedInPoint && c.outPoint == selectedOutPoint))
                 connections.Add(new Connection(selectedInPoint, selectedOutPoint, OnClickRemoveConnection, () => new List<NodeWindow>(){ }));
+            save();
         }
 
         private void ClearConnectionSelection()
@@ -188,6 +195,7 @@ namespace Assets.Timeline.SubWindows
         {
             if(!connections.Any(c => c.inPoint == selectedInPoint && c.outPoint == selectedOutPoint))
                 connections.Add(new Connection(selectedInPoint, selectedOutPoint, OnClickRemoveConnection, getEvents));
+            save();
         }
 
         public override void Draw()
@@ -214,7 +222,7 @@ namespace Assets.Timeline.SubWindows
 
         protected override void DrawName()
         {
-            nodeName = GUI.TextField(new Rect(rect.x + 5f, rect.y-20f, 100f, 18f), nodeName);
+            editNodeName = GUI.TextField(new Rect(rect.x + 5f, rect.y-20f, 100f, 18f), editNodeName);
         }
 
         protected override void DrawParams()
@@ -222,10 +230,12 @@ namespace Assets.Timeline.SubWindows
             foreach (var n in nodes)
             {
                 n.Draw();
+                n.ProcessEvents(Event.current);
             }
             foreach (var c in connections)
             {
                 c.Draw();
+                c.OnGUIEvent(Event.current);
             }
         }
 

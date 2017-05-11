@@ -1,5 +1,7 @@
 ﻿using Assets.Core;
+using Assets.Core.Tree;
 using Assets.Timeline.SubWindows;
+using Assets.Timeline.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +13,11 @@ using UnityEngine;
 
 namespace Assets.Timeline
 {
-    class ScriptGraph : EditorWindow
+    public class ScriptGraph : EditorWindow
     {
         int selectorIndex;
-        List<NodeWindow> nodes = new List<NodeWindow>();
-        List<Connection> connections = new List<Connection>();
+        public List<NodeWindow> nodes = new List<NodeWindow>();
+        public List<Connection> connections = new List<Connection>();
         GUIStyle nodeStyle;
         GUIStyle inPointStyle;
         GUIStyle outPointStyle;
@@ -32,6 +34,7 @@ namespace Assets.Timeline
         Connection.Point selectedOutPoint;
         List<string> handlerNames;
         List<string> eventNames;
+        ScriptTree currTree;
         
         [MenuItem ("Window/ScriptGraph")]
         public static void ShowWindow()
@@ -39,8 +42,75 @@ namespace Assets.Timeline
             EditorWindow.GetWindow(typeof(ScriptGraph));
         }
 
+        string currScriptName = null;
+        Dictionary<string, ScriptTree> scriptTrees;
+
+        public void Load(ScriptTree tree, string name)
+        {
+            var p = GetSystem(tree.Nodes);
+            nodes = p.Key;
+            connections = p.Value;
+        }
+
+        private KeyValuePair<List<NodeWindow>, List<Connection>> GetSystem(List<ScriptTree.Node> rawNodes)
+        {
+            List<NodeWindow> nodes = new List<NodeWindow>();
+            List<Connection> conns = new List<Connection>();
+            foreach (var rn in rawNodes)
+            {
+                NodeWindow node;
+                if (rn.Base == "")
+                {
+                    var p = GetSystem(rn.Members);
+                    SubWindows.Group g = new SubWindows.Group(p.Key, p.Value, rn.Name, new Vector2((float)rn.Position.X, (float)rn.Position.Y), 250, inPointStyle, outPointStyle,
+                        OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup,
+                        Events, OnClickDegroup, Save, GetNewName);
+                    var start = g.nodes.Find(n => n.nodeName == rn.StartMember);
+                    var end = g.nodes.Find(n => n.nodeName == rn.EndMember);
+                    if (start != null)
+                    {
+                        var startConn = new Connection(start.inPoint, g.startPoint, g.OnClickRemoveConnection, () => new List<NodeWindow>());
+                        g.connections.Add(startConn);
+                    }
+                    if (end != null)
+                    {
+                        var endConn = new Connection(g.endPoint, end.outPoint, g.OnClickRemoveConnection, () => new List<NodeWindow>());
+                        g.connections.Add(endConn);
+                    }
+                    node = g;
+                }
+                else
+                {
+                    node = new NodeWindow(rn.Base, rn.Name, new Vector2((float)rn.Position.X, (float)rn.Position.Y),
+                        250, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup, GetNewName);
+                    node.paramPairs = rn.Params.ToList();
+                    node.nodeName = rn.Name;
+                }
+                nodes.Add(node);
+            }
+
+            foreach (var rn in rawNodes)
+            {
+                var startNode = nodes.Find(n => n.nodeName == rn.Name);
+                Debug.Assert(startNode != null);
+                if (rn.Succ != null)
+                {
+                    foreach (var succ in rn.Succ)
+                    {
+                        var destNode = nodes.Find(n => n.nodeName == succ.Dest);
+                        Debug.Assert(destNode != null);
+
+                        var conn = new Connection(destNode.inPoint, startNode.outPoint, OnClickRemoveConnection, Events);
+                        conns.Add(conn);
+                    }
+                }
+            }
+            return new KeyValuePair<List<NodeWindow>, List<Connection>>(nodes, conns);
+        }
+
         private void OnEnable()
         {
+            scriptTrees = Meta.ScriptTrees;
             inPointStyle = new GUIStyle();
             inPointStyle.normal.background = EditorGUIUtility.Load("builtin skins/darkskin/images/btn left.png") as Texture2D;
             inPointStyle.active.background = EditorGUIUtility.Load("builtin skins/darkskin/images/btn left on.png") as Texture2D;
@@ -63,21 +133,43 @@ namespace Assets.Timeline
 
         private void OnGUI()
         {
+            if(currScriptName == null && scriptTrees.Count != 0)
+            {
+                OnSelectorChange(0);
+            }
             if(selectBoxStyle == null)
                 selectBoxStyle = (GUIStyle)"TL SelectionButton PreDropGlow";
-            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandWidth(true), GUILayout.MinWidth(100f));
+            EditorGUILayout.BeginHorizontal();
             HandleSelector();
-            DrawGrid(20, 0.2f, Color.gray);
-            DrawGrid(100, 0.4f, Color.gray);
-            HandleNodes();
-            HandleConnections();
-            OnGUIEvent(Event.current);
-            if (selectDragOn)
-                SelectDrag(Event.current);
-            DrawConnectionPreview(Event.current);
+            HandleAdd();
+            EditorGUILayout.EndHorizontal();
+            if (currScriptName != null)
+            {
+                DrawGrid(20, 0.2f, Color.gray);
+                DrawGrid(100, 0.4f, Color.gray);
+                HandleNodes();
+                HandleConnections();
+                OnGUIEvent(Event.current);
+                if (selectDragOn)
+                    SelectDrag(Event.current);
+                DrawConnectionPreview(Event.current);
+            }
             EditorGUILayout.EndVertical();
 
             Repaint();
+        }
+
+        private void HandleAdd()
+        {
+            if(GUILayout.Button("Add New", GUILayout.MaxWidth(200f)))
+            {
+
+            }
+            if(GUILayout.Button("Remove", GUILayout.MaxWidth(200f)))
+            {
+
+            }
         }
 
         private void DrawGrid(float gridSpacing, float gridOpacity, Color gridColor)
@@ -177,17 +269,14 @@ namespace Assets.Timeline
 
         void HandleSelector()
         {
-            EditorGUILayout.BeginHorizontal(GUI.skin.box);
-            IEnumerable<string> options = new List<String> { "Stub1" };
+            IEnumerable<string> options = scriptTrees.Keys;
 
-            int selected = EditorGUILayout.Popup(selectorIndex, options.ToArray(), GUILayout.Width(50f));
+            int selected = EditorGUILayout.Popup(selectorIndex, options.ToArray(), GUILayout.MinWidth(200f));
             if (selected != selectorIndex) //Changed
-
             {
                 selectorIndex = selected;
                 OnSelectorChange(selected);
             }
-            EditorGUILayout.EndHorizontal();
         }
         void HandleNodes()
         {
@@ -221,7 +310,6 @@ namespace Assets.Timeline
         {
             drag = Vector2.zero;
             //mouse on a node
-
 
             if (e.type == EventType.MouseDown && !nodes.Any(n => n.MouseOverlapped(e.mousePosition) && n.selected))
             {
@@ -304,6 +392,11 @@ namespace Assets.Timeline
                     }
                     break;
             }
+
+            if(e.type == EventType.MouseUp || e.keyCode == KeyCode.Return)
+            {
+                Save();
+            }
         }
 
         private void OnDrag(Vector2 delta)
@@ -320,21 +413,33 @@ namespace Assets.Timeline
 
         private void OnSelectorChange(int selected)
         {
-
+            Load(scriptTrees.ToList()[selected].Value, scriptTrees.ToList()[selected].Key);
+            currScriptName = scriptTrees.ToList()[selected].Key;
+            currTree = scriptTrees.ToList()[selected].Value;
         }
         private void OnClickAddNode(Vector2 mousePosition, string className)
         {
-            string initialName = GetNewName(className);
-            nodes.Add(new NodeWindow(className, initialName, mousePosition, 250, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup));
+            string initialName = GetNewName(className, null);
+            nodes.Add(new NodeWindow(className, initialName, mousePosition, 250, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup, GetNewName));
+            Save();
+        }
+        protected void Save()
+        {
+            ScriptTree tree = ScriptTree.Construct(this);
+            Meta.SaveScripts(currScriptName, tree);
         }
 
-        private string GetNewName(string baseName)
+        private string GetNewName(string baseName, NodeWindow exceptNode)
         {
-            string namePattern = @"^" + baseName + @"\s\((\d+)\)$";
+            string namePattern = @"^" + baseName + @"(?:\s\(\d+\))*\s\((\d+)\)$";
             Regex regex = new Regex(namePattern);
             string initialName = baseName;
             int index = 0;
-            foreach (var name in nodes.Select(n=>n.nodeName))
+            var subPool = from node in nodes
+                          where node.isWorkspace
+                          from subnode in ((SubWindows.Group)node).nodes
+                          select subnode;
+            foreach (var name in nodes.Concat(subPool).Where(n=>n!=exceptNode).Select(n=>n.nodeName))
             {
                 if (name == baseName)
                 {
@@ -371,8 +476,9 @@ namespace Assets.Timeline
             var kidnappedNodes = nodes.Where(n => n.selected);
             var kidnappedConnections = connections.Where(c => kidnappedNodes.Contains(c.inPoint.masterNode) && kidnappedNodes.Contains(c.outPoint.masterNode));
 
-            nodes.Add(new SubWindows.Group(kidnappedNodes.ToList(), kidnappedConnections.ToList(), GetNewName("Group"), new Vector2(0, 0), 200f, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup, Events, OnClickDegroup));
+            nodes.Add(new SubWindows.Group(kidnappedNodes.ToList(), kidnappedConnections.ToList(), GetNewName("Group", null), new Vector2(0, 0), 200f, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup, Events, OnClickDegroup, Save, GetNewName));
             OnClickRemoveNode(null);
+            Save();
         }
         private void OnClickInPoint(Connection.Point inPoint)
         {
@@ -408,6 +514,7 @@ namespace Assets.Timeline
         private void OnClickRemoveConnection(Connection connection)
         {
             connections.Remove(connection);
+            Save();
         }
         private void OnClickRemoveNode(NodeWindow node)
         {
@@ -427,6 +534,7 @@ namespace Assets.Timeline
                 }
             }
             nodes = (from n in nodes where !n.selected select n).ToList();
+            Save();
         }
         private void OnClickDegroup(SubWindows.Group g)
         {
@@ -436,22 +544,24 @@ namespace Assets.Timeline
                 n.outPoint.onClickConnectionPoint = OnClickOutPoint;
                 n.ResetStyle();
             }
-            foreach (var c in g.Connections)
+            foreach (var c in g.InterConnections)
             {
                 c.onClickRemoveConnection = OnClickRemoveConnection;
             }
             nodes.AddRange(g.nodes);
-            connections.AddRange(g.Connections);
+            connections.AddRange(g.InterConnections);
             nodes.Remove(g);
             connections = (from c in connections
                            where c.inPoint.masterNode != g && c.outPoint.masterNode != g
                            select c).ToList();
+            Save();
         }
 
         private void CreateConnection()
         {
             if(!connections.Any(c => c.inPoint == selectedInPoint && c.outPoint == selectedOutPoint))
                 connections.Add(new Connection(selectedInPoint, selectedOutPoint, OnClickRemoveConnection, Events));
+            Save();
         }
 
         private void ClearConnectionSelection()
