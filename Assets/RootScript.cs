@@ -36,7 +36,7 @@ public class RootScript : MonoBehaviour {
                 .Add("Velocity", new Vector3(0.0f, 0.01f, 0.0f).GetSerialized())
                 .Add("Duration", "0.5");
             HandlerFuture hf = new MoveConstant(newParams);
-            hf.SetAfter((_) => new MoveConstant(Params.Empty.Add("Target", "test1")));
+            hf.AddAfter((_) => new MoveConstant(Params.Empty.Add("Target", "test1")));
             return hf;
         }
         );
@@ -65,8 +65,8 @@ public class RootScript : MonoBehaviour {
                 .Add("Duration", "0.5");
             EventPromise pright = new KeyUpEvent(KeyCode.RightArrow);
             EventPromise pdown = new KeyUpEvent(KeyCode.DownArrow);
-            hf.AddExternalCondition(pright, (_) => new MoveConstant(rightParams), false);
-            hf.AddExternalCondition(pdown, (_) => new MoveConstant(downParams), false);
+            hf.AddAfter((_) => new MoveConstant(rightParams));
+            hf.AddAfter((_) => new MoveConstant(downParams));
             return hf;
         }
         );
@@ -151,8 +151,8 @@ public class RootScript : MonoBehaviour {
             HandlerFuture right = new MoveConstant(newParams1);
             HandlerFuture up = new MoveConstant(newParams2);
 
-            right.SetAfter((_) => up);
-            up.SetAfter((_) => right);
+            right.AddAfter((_) => up);
+            up.AddAfter((_) => right);
             EventPromise keyUp = new KeyUpEvent(KeyCode.RightArrow);
             right.AddExternalCondition(keyUp, (_) => new DoNothing(), true);
             return right;
@@ -182,7 +182,7 @@ public class RootScript : MonoBehaviour {
 
             EventPromise upDown = new KeyDownEvent(KeyCode.UpArrow);
             right.AddExternalCondition(upDown, (_) => right, true);
-            right.SetAfter((_) => up);
+            right.AddAfter((_) => up);
             return right;
         }
         );
@@ -209,7 +209,7 @@ public class RootScript : MonoBehaviour {
                 .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f).GetSerialized())
                 .Add("Duration", "0.5");
             HandlerFuture right = new MoveConstant(params2);
-            up.SetAfter((_) => right);
+            up.AddAfter((_) => right);
             return up;
         }
         );

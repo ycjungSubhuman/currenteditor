@@ -32,7 +32,7 @@ namespace Assets.Core
             this.routine = func;
         }
         /* Set Next Handler to be run after this ends */
-        public void SetAfter(Func<Params, HandlerFuture> genNextHandler) 
+        public void AddAfter(Func<Params, HandlerFuture> genNextHandler) 
         {
             Func<Params, IEnumerator<Params>> prevRoutine = routine;
             routine = (ps) => After(ps, prevRoutine(ps), genNextHandler);
@@ -47,24 +47,17 @@ namespace Assets.Core
 
         private IEnumerator<Params> After(Params ps, IEnumerator<Params> prevRoutine, Func<Params, HandlerFuture> genNextHandler)
         {
-            IEnumerator<Params> nextRoutine = null;
             while (true)
             {
-                if (nextRoutine != null)
+                prevRoutine.MoveNext();
+                if(prevRoutine.Current == null)
                 {
-                    nextRoutine.MoveNext();
-                    yield return nextRoutine.Current;
+                    HandlerFuture nextNewHandler = genNextHandler(ps);
+                    nextNewHandler.Begin();
+                    yield return null;
+                    yield break;
                 }
-                else
-                {
-                    prevRoutine.MoveNext();
-                    if (prevRoutine.Current == null)
-                    {
-                        nextRoutine = genNextHandler(ps).GetCoroutine();
-                        prevRoutine.Dispose();
-                    }
-                    yield return prevRoutine.Current;
-                }
+                yield return prevRoutine.Current;
             }
         }
 
@@ -90,7 +83,7 @@ namespace Assets.Core
         public void AddExternalCondition(EventPromise externalPromise, Func<Params, HandlerFuture> genNextHandler, bool stopOnTrigger)
         {
             Func<Params, IEnumerator<Params>> prevRoutine = routine;
-            externalPromise.Handler.SetAfter(genNextHandler);
+            externalPromise.Handler.AddAfter(genNextHandler);
             routine = (ps) => CheckingExternalCondition(ps, prevRoutine(ps), externalPromise, genNextHandler, stopOnTrigger);
         }
         
