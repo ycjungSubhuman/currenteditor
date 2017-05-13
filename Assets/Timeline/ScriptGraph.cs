@@ -101,6 +101,11 @@ namespace Assets.Timeline
                         Debug.Assert(destNode != null);
 
                         var conn = new Connection(destNode.inPoint, startNode.outPoint, OnClickRemoveConnection, Events);
+                        foreach (var cond in succ.Condition)
+                        {
+                            conn.conditions.Add(nodes.Find(n => n.nodeName == cond));
+                        }
+                        conn.stopPrev = succ.EndPrev;
                         conns.Add(conn);
                     }
                 }
@@ -110,7 +115,6 @@ namespace Assets.Timeline
 
         private void OnEnable()
         {
-            scriptTrees = Meta.ScriptTrees;
             inPointStyle = new GUIStyle();
             inPointStyle.normal.background = EditorGUIUtility.Load("builtin skins/darkskin/images/btn left.png") as Texture2D;
             inPointStyle.active.background = EditorGUIUtility.Load("builtin skins/darkskin/images/btn left on.png") as Texture2D;
@@ -133,8 +137,9 @@ namespace Assets.Timeline
 
         private void OnGUI()
         {
-            if(currScriptName == null && scriptTrees.Count != 0)
+            if(scriptTrees == null || currScriptName == null && scriptTrees.Count != 0)
             {
+                scriptTrees = Meta.ScriptTrees;
                 OnSelectorChange(0);
             }
             if(selectBoxStyle == null)

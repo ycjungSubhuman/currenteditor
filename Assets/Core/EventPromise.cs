@@ -14,7 +14,7 @@ namespace Assets.Core
         private bool triggered = false;
 
         /* Conditions for this promise*/
-        protected abstract Dictionary<string, Action> GetUpdates();
+        public abstract Dictionary<string, Action> GetUpdates();
         private Params initialParams = Params.Empty;
 
         public EventPromise(Params ps) {

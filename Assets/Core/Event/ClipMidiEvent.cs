@@ -22,7 +22,7 @@ namespace Assets.Core.Event
             this.type = (Midi.MidiMessage.Type)Enum.Parse(typeof(Midi.MidiMessage.Type), ps.GetString("MessageType"));
         }
 
-        protected override Dictionary<string, Action> GetUpdates()
+        public override Dictionary<string, Action> GetUpdates()
         {
             Clip clip = MonoHelper.MonoFindClip(clipName);
 

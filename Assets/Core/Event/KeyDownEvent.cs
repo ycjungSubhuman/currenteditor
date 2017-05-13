@@ -16,7 +16,7 @@ namespace Assets.Core.Event
             this.keyCode = (KeyCode)Enum.Parse(typeof(KeyCode), ps.GetString("KeyCode"));
         }
 
-        protected override Dictionary<string, Action> GetUpdates()
+        public override Dictionary<string, Action> GetUpdates()
         {
             Dictionary<string, Action> updates = new Dictionary<string, Action>();
             updates.Add("KeyDown" + keyCode.ToString(), () => 

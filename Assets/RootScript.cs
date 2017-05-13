@@ -22,7 +22,8 @@ public class RootScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         InitMetaData();
-        Test1_2();
+        //Test1_2();
+        LoadScripts();
 	}
 
     private void Test1_2()
@@ -49,11 +50,14 @@ public class RootScript : MonoBehaviour {
                 .Add("Target", "test1")
                 .Add("Velocity", new Vector3(-0.01f, 0.0f, 0.0f).GetSerialized())
                 .Add("Duration", "0.5");
-            hf.GroupAfter((_) => new MoveConstant(leftParams));
+            EventPromise px = new KeyDownEvent(Params.Empty.Add("KeyCode", "X"));
+            EventPromise pc = new KeyDownEvent(Params.Empty.Add("KeyCode", "C"));
+            var h = new MoveConstant(rightParams);
+            var v = new MoveConstant(downParams);
+            v.AddAfter((_) => h);
+            h.AddAfter((_) => v);
 
-            hf.AddAfter((_) => new MoveConstant(rightParams));
-            hf.AddAfter((_) => new MoveConstant(downParams));
-            return hf;
+            return v;
         }
         );
         p.Handler.Begin();
@@ -116,17 +120,18 @@ public class RootScript : MonoBehaviour {
                     ConstructSingleEvents(eventMap, node);
                 }
             }
-            foreach (var node in nodes)
+            foreach (var evtp in eventMap)
             {
-                if (node.Base == "") //group
+                var evtNode = nodes.Find(n => n.Name == evtp.Key);
+                if (evtNode.Succ != null)
                 {
-                }
-                else if (node.Base.Contains("Event"))
-                {
-                }
-                else //handler
-                {
-                    var constructed = ConstructHandler(handlerMap, eventMap, nodes, node);
+                    foreach (var succ in evtNode.Succ)
+                    {
+                        var handler = ConstructHandler(new List<StackElement>(), handlerMap, eventMap, nodes, nodes.Find(n => n.Name == succ.Dest));
+                        evtp.Value.Handler.SetNewAfter((_) => handler);
+                        evtp.Value.StartPollUpdateGlobal();
+                        evtp.Value.Handler.Begin();
+                    }
                 }
             }
         }
@@ -137,45 +142,110 @@ public class RootScript : MonoBehaviour {
         eventMap.Add(node.Name, GetSingleEvent(node));
     }
 
-    private HandlerFuture ConstructHandler(Dictionary<string, HandlerFuture> handlerMap, Dictionary<string, EventPromise> eventMap, List<ScriptTree.Node> nodes, ScriptTree.Node startNode)
+    class StackElement
+    {
+        public StackElement(string name, HandlerFuture handler, ScriptTree.Node tree, ScriptTree.Succ prevSucc)
+        {
+            this.Name = name;
+            this.Handler = handler;
+            this.Node = tree;
+            this.PrevSucc = prevSucc;
+        }
+        public string Name;
+        public HandlerFuture Handler;
+        public ScriptTree.Node Node;
+        public ScriptTree.Succ PrevSucc;
+    }
+
+    private HandlerFuture ConstructHandler(List<StackElement> stack, Dictionary<string, HandlerFuture> handlerMap, Dictionary<string, EventPromise> eventMap, List<ScriptTree.Node> nodes, ScriptTree.Node startNode)
     {
         var currHandler = GetSingleHandler(startNode);
-
-        if(startNode.Succ == null)
+        stack.Add(new StackElement(startNode.Name, currHandler, startNode, null));
+        StackElement lastPopped = null;
+        List<KeyValuePair<HandlerFuture, HandlerFuture>> cycleList = new List<KeyValuePair<HandlerFuture, HandlerFuture>>();
+        while (stack.Count > 0)
         {
-            return currHandler;
+            if(stack.Last().Node.Succ != null)
+            {
+                var succ = stack.Last().Node.Succ.Where(s => !handlerMap.ContainsKey(s.Dest)).FirstOrDefault();
+                if(succ != null)
+                {
+                    var nextNode = nodes.Find(n => n.Name == succ.Dest);
+                    if(stack.Exists(e => e.Name == succ.Dest)) //non-checked cylce
+                    {
+                        var cyclePoints = stack.FindAll(e => e.Name == succ.Dest);
+                        foreach (var p in cyclePoints)
+                        {
+                            cycleList.Add(new KeyValuePair<HandlerFuture, HandlerFuture>(stack.Last().Handler, p.Handler));
+                        }
+                    }
+                    else
+                    {
+                        stack.Add(new StackElement(succ.Dest, GetSingleHandler(nextNode), nextNode, succ));
+                        continue;
+                    }
+                }
+            }
+            lastPopped = stack.Last();
+            stack = stack.Take(stack.Count - 1).ToList();
+            if (stack.Count != 0)
+            {
+                ApplySucc(eventMap, stack.Last().Handler, lastPopped.PrevSucc, lastPopped.Handler);
+            }
+            handlerMap.Add(lastPopped.Name, lastPopped.Handler);
+        }
+        foreach (var p in cycleList)
+        {
+            p.Key.AddAfter((_) => p.Value);
+        }
+        return lastPopped.Handler;
+    }
+
+    private void ApplySucc(Dictionary<string, EventPromise> eventMap, HandlerFuture curr, ScriptTree.Succ succ, HandlerFuture next)
+    {
+        if(succ.Condition == null || succ.Condition.Count == 0)
+        {
+            curr.AddAfter((_) => next);
+        }
+        else if(succ.Condition.Count == 1)
+        {
+            curr.AddExternalCondition(eventMap[succ.Condition[0]], (_) => next, succ.EndPrev);
         }
         else
         {
-            var tNode = startNode;
-            foreach (var succ in tNode.Succ)
+            var combined = new OrEvent(eventMap[succ.Condition[0]], eventMap[succ.Condition[1]]);
+            for(int i=2; i<succ.Condition.Count; i++)
             {
-                HandlerFuture nextHandler = null;
-                if (handlerMap.ContainsKey(succ.Dest))
-                {
-                    nextHandler = handlerMap[succ.Dest];
-                }
-                else
-                {
-                    nextHandler = ConstructHandler(handlerMap, eventMap, nodes, nodes.Find(n => n.Name == succ.Dest));
-                }
-                ApplySucc(currHandler, succ, nextHandler);
-                handlerMap.Add(succ.Dest, nextHandler);
+                combined = new OrEvent(combined, eventMap[succ.Condition[i]]);
             }
-            return currHandler;
+            curr.AddExternalCondition(combined, (_) => next, succ.EndPrev);
         }
-    }
-
-    private void ApplySucc(HandlerFuture curr, ScriptTree.Succ succ, HandlerFuture next)
-    {
     }
 
     private HandlerFuture GetSingleHandler(ScriptTree.Node node)
     {
-        Debug.Assert(!node.Name.Contains("Event") && node.Name != "");
+        Debug.Assert(!node.Name.Contains("Event"));
 
-        Type t = Type.GetType("Assets.Core.Handler." + node.Base);
-        var handler = Activator.CreateInstance(t, new Params(node.Params)) as HandlerFuture;
+        HandlerFuture handler = null;
+        if (node.Members == null)
+        {
+            Type t = Type.GetType("Assets.Core.Handler." + node.Base);
+            handler = Activator.CreateInstance(t, new Params(node.Params)) as HandlerFuture;
+        }
+        else
+        {
+            var start = node.Members.Find(m => m.Name == node.StartMember);
+            handler = GetSingleHandler(start);
+            var curr = start;
+            while (curr.Name != node.EndMember)
+            {
+                Debug.Assert(curr.Succ != null && curr.Succ.Count == 1 && curr.Succ[0].Condition == null);
+                var nextTree = node.Members.Find(m => m.Name == curr.Succ[0].Dest);
+                var next = GetSingleHandler(nextTree);
+                handler.GroupAfter((_) => next);
+                curr = nextTree;
+            }
+        }
 
         return handler;
     }
