@@ -15,9 +15,17 @@ namespace Assets.Core
 
         /* Conditions for this promise*/
         protected abstract Dictionary<string, Action> GetUpdates();
+        private Params initialParams = Params.Empty;
 
-        public EventPromise() {
+        public EventPromise(Params ps) {
             handler = new CustomHandler(WaitUntilTrigger, Params.Empty);
+            foreach (var pair in GetDefaultParams())
+            {
+                if(ps.ContainsKey(pair.Key))
+                    initialParams.Add(pair.Key, ps.GetString(pair.Key));
+                else 
+                    initialParams.Add(pair.Key, pair.Value);
+            }
         }
 
         public HandlerFuture Handler

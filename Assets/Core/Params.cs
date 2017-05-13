@@ -13,7 +13,7 @@ namespace Assets.Core
         private Dictionary<string, string> dataLink = new Dictionary<string, string>();
 
         private Params() { }
-        private Params(Dictionary<string, string> map)
+        public Params(Dictionary<string, string> map)
         {
             this.map = map;
         }
@@ -44,6 +44,11 @@ namespace Assets.Core
         public string GetString(String nameKey)
         {
             return map[nameKey];
+        }
+
+        public int GetInt(String nameKey)
+        {
+            return int.Parse(map[nameKey]);
         }
 
         public bool GetBool(String nameKey)

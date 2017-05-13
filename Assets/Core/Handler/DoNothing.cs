@@ -12,6 +12,11 @@ namespace Assets.Core.Handler
             SetInitialRoutine(Nothing);
         }
 
+        public DoNothing(Params ps) : base(ps)
+        {
+            SetInitialRoutine(Nothing);
+        }
+
         private IEnumerator<Params> Nothing(Params _)
         {
             yield return null;

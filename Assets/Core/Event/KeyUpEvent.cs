@@ -9,10 +9,11 @@ namespace Assets.Core.Event
     class KeyUpEvent: EventPromise
     {
         private KeyCode keyCode;
-        public KeyUpEvent() { }
-        public KeyUpEvent(KeyCode keyCode)
+        public KeyUpEvent(): base(Params.Empty) { }
+        public KeyUpEvent(Params ps)
+            :base(ps)
         {
-            this.keyCode = keyCode;
+            this.keyCode = (KeyCode)Enum.Parse(typeof(KeyCode), ps.GetString("KeyCode"));
         }
 
         protected override Dictionary<string, Action> GetUpdates()

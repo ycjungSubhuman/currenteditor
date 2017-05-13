@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using YamlDotNet;
+using System.Linq;
 
 public class RootScript : MonoBehaviour {
 
@@ -24,29 +25,10 @@ public class RootScript : MonoBehaviour {
         Test1_2();
 	}
 
-    private void Test1()
-    {
-        //On Pressed Z, test1 will move right for 0.5 secs after moving up for 0.5 secs.
-        EventPromise p = new KeyDownEvent(KeyCode.Z);
-        p.StartPollUpdateGlobal();
-        p.Handler.SetNewAfter((ps) =>
-        {
-            Params newParams = Params.Empty
-                .Add("Target", "test1")
-                .Add("Velocity", new Vector3(0.0f, 0.01f, 0.0f).GetSerialized())
-                .Add("Duration", "0.5");
-            HandlerFuture hf = new MoveConstant(newParams);
-            hf.AddAfter((_) => new MoveConstant(Params.Empty.Add("Target", "test1")));
-            return hf;
-        }
-        );
-        p.Handler.Begin();
-    }
-
     private void Test1_2()
     {
         //On Pressed Z, test1 will (move right + move down) for 0.5 secs after moving up for 0.5 secs.
-        EventPromise p = new KeyDownEvent(KeyCode.Z);
+        EventPromise p = new KeyDownEvent(Params.Empty.Add("KeyCode", "Z"));
         p.StartPollUpdateGlobal();
         p.Handler.SetNewAfter((ps) =>
         {
@@ -63,154 +45,15 @@ public class RootScript : MonoBehaviour {
                 .Add("Target", "test1")
                 .Add("Velocity", new Vector3(0.0f, -0.01f, 0.0f).GetSerialized())
                 .Add("Duration", "0.5");
-            EventPromise pright = new KeyUpEvent(KeyCode.RightArrow);
-            EventPromise pdown = new KeyUpEvent(KeyCode.DownArrow);
+            Params leftParams = Params.Empty
+                .Add("Target", "test1")
+                .Add("Velocity", new Vector3(-0.01f, 0.0f, 0.0f).GetSerialized())
+                .Add("Duration", "0.5");
+            hf.GroupAfter((_) => new MoveConstant(leftParams));
+
             hf.AddAfter((_) => new MoveConstant(rightParams));
             hf.AddAfter((_) => new MoveConstant(downParams));
             return hf;
-        }
-        );
-        p.Handler.Begin();
-    }
-
-    private void Test2()
-    {
-        //On Pressed ->, test1 starts to move, on release, test1 stops
-        EventPromise p = new KeyDownEvent(KeyCode.RightArrow);
-        p.Handler.SetNewAfter((ps) =>
-        {
-            Params newParams = Params.Empty
-            .Add("Target", "test1")
-            .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f).GetSerialized())
-            .Add("Duration", "inf");
-            HandlerFuture hf = new MoveConstant(newParams);
-            EventPromise up = new KeyUpEvent(KeyCode.RightArrow);
-            hf.AddExternalCondition(up, (_) => new DoNothing(), true);
-            return hf;
-        }
-        );
-        p.StartPollUpdateGlobal();
-        p.Handler.Begin();
-    }
-
-    private void Test3()
-    {
-        //While Pressing X, testclip1 plays
-        EventPromise p = new KeyDownEvent(KeyCode.X);
-        p.Handler.SetNewAfter((ps) =>
-        {
-            Params newParams = Params.Empty
-            .Add("ClipName", "testclip1")
-            .Add("Loop", "true");
-            HandlerFuture hf = new PlayClip(newParams);
-            EventPromise up = new KeyUpEvent(KeyCode.X);
-            hf.AddExternalCondition(up, (ps2) => {
-                ps2.Add("ClipName", "testclip1");
-                return new StopClip(ps2);
-                }, false);
-            return hf;
-        }
-        );
-        p.StartPollUpdateGlobal();
-        p.Handler.Begin();
-    }
-
-    private void Test4()
-    {
-        //On NOTE ON of CHANNEL 9 in testclip1, test1 moves right for 0.05 seconds
-        EventPromise p = new ClipMidiEvent("testclip1", 9, MidiMessage.Type.NOTE_ON);
-        p.Handler.SetNewAfter((ps) =>
-        {
-            Params newParams = Params.Empty
-                .Add("Target", "test1")
-                .Add("Velocity", new Vector3(0.01f, 0.00f, 0.0f).GetSerialized())
-                .Add("Duration", "0.05");
-            HandlerFuture hf = new MoveConstant(newParams);
-            return hf;
-        }
-        );
-        p.StartPollUpdateGlobal();
-        p.Handler.Begin();
-    }
-
-    private void Test5()
-    {
-        //On Pressed ->, test1 starts to move, up/right repeatedly on release, test1 stops
-        EventPromise p = new KeyDownEvent(KeyCode.RightArrow);
-        p.Handler.SetNewAfter((ps) =>
-        {
-            Params newParams1 = Params.Empty
-            .Add("Target", "test1")
-            .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f).GetSerialized())
-            .Add("Duration", "0.1");
-
-            Params newParams2 = Params.Empty
-            .Add("Target", "test1")
-            .Add("Velocity", new Vector3(0.00f, 0.01f, 0.0f).GetSerialized())
-            .Add("Duration", "0.1");
-            HandlerFuture right = new MoveConstant(newParams1);
-            HandlerFuture up = new MoveConstant(newParams2);
-
-            right.AddAfter((_) => up);
-            up.AddAfter((_) => right);
-            EventPromise keyUp = new KeyUpEvent(KeyCode.RightArrow);
-            right.AddExternalCondition(keyUp, (_) => new DoNothing(), true);
-            return right;
-        }
-        );
-        p.StartPollUpdateGlobal();
-        p.Handler.Begin();
-    }
-
-    private void Test6()
-    {
-        //On Pressed ->, test1 starts to move right for 1 second. If pressed up while moving right, restarts this handler. After moving for 2 seconds, move up for 1 second.
-        EventPromise p = new KeyDownEvent(KeyCode.RightArrow);
-        p.Handler.SetNewAfter((ps) =>
-        {
-            Params newParams1 = Params.Empty
-            .Add("Target", "test1")
-            .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f).GetSerialized())
-            .Add("Duration", "1");
-
-            Params newParams2 = Params.Empty
-            .Add("Target", "test1")
-            .Add("Velocity", new Vector3(0.00f, 0.01f, 0.0f).GetSerialized())
-            .Add("Duration", "1");
-            HandlerFuture right = new MoveConstant(newParams1);
-            HandlerFuture up = new MoveConstant(newParams2);
-
-            EventPromise upDown = new KeyDownEvent(KeyCode.UpArrow);
-            right.AddExternalCondition(upDown, (_) => right, true);
-            right.AddAfter((_) => up);
-            return right;
-        }
-        );
-        p.StartPollUpdateGlobal();
-        p.Handler.Begin();
-    }
-
-    private void Test7()
-    {
-        //On Pressed Z, test1 will move right for 0.5 secs after moving up for 0.5 secs. The target is tranferred using DataLink
-        EventPromise p = new KeyDownEvent(KeyCode.Z);
-        p.StartPollUpdateGlobal();
-        p.Handler.SetNewAfter((ps) =>
-        {
-            Params newParams = Params.Empty
-                .Add("Target", "test1")
-                .Add("Velocity", new Vector3(0.0f, 0.01f, 0.0f).GetSerialized())
-                .Add("Duration", "0.5");
-            HandlerFuture up = new MoveConstant(newParams);
-            var dataLink = new Dictionary<string, string>();
-            dataLink.Add("Target", "Target");
-            newParams.AddDataLInk(dataLink);
-            Params params2 = newParams.GetLinkedParams()
-                .Add("Velocity", new Vector3(0.01f, 0.0f, 0.0f).GetSerialized())
-                .Add("Duration", "0.5");
-            HandlerFuture right = new MoveConstant(params2);
-            up.AddAfter((_) => right);
-            return up;
         }
         );
         p.Handler.Begin();
@@ -258,6 +101,92 @@ public class RootScript : MonoBehaviour {
             Debug.Log("Constructed a script graph : " + graph.Name);
             Debug.Log(ser.Serialize(scriptGraph));
         }
+    }
+    private void LoadScripts()
+    {
+        foreach (var p in Meta.ScriptTrees) {
+            var nodes = p.Value.Nodes;
+            Dictionary<string, HandlerFuture> handlerMap = new Dictionary<string, HandlerFuture>();
+            Dictionary<string, EventPromise> eventMap = new Dictionary<string, EventPromise>();
+
+            foreach (var node in nodes)
+            {
+                if (node.Base.Contains("Event"))
+                {
+                    ConstructSingleEvents(eventMap, node);
+                }
+            }
+            foreach (var node in nodes)
+            {
+                if (node.Base == "") //group
+                {
+                }
+                else if (node.Base.Contains("Event"))
+                {
+                }
+                else //handler
+                {
+                    var constructed = ConstructHandler(handlerMap, eventMap, nodes, node);
+                }
+            }
+        }
+    }
+
+    private void ConstructSingleEvents(Dictionary<string, EventPromise> eventMap, ScriptTree.Node node)
+    {
+        eventMap.Add(node.Name, GetSingleEvent(node));
+    }
+
+    private HandlerFuture ConstructHandler(Dictionary<string, HandlerFuture> handlerMap, Dictionary<string, EventPromise> eventMap, List<ScriptTree.Node> nodes, ScriptTree.Node startNode)
+    {
+        var currHandler = GetSingleHandler(startNode);
+
+        if(startNode.Succ == null)
+        {
+            return currHandler;
+        }
+        else
+        {
+            var tNode = startNode;
+            foreach (var succ in tNode.Succ)
+            {
+                HandlerFuture nextHandler = null;
+                if (handlerMap.ContainsKey(succ.Dest))
+                {
+                    nextHandler = handlerMap[succ.Dest];
+                }
+                else
+                {
+                    nextHandler = ConstructHandler(handlerMap, eventMap, nodes, nodes.Find(n => n.Name == succ.Dest));
+                }
+                ApplySucc(currHandler, succ, nextHandler);
+                handlerMap.Add(succ.Dest, nextHandler);
+            }
+            return currHandler;
+        }
+    }
+
+    private void ApplySucc(HandlerFuture curr, ScriptTree.Succ succ, HandlerFuture next)
+    {
+    }
+
+    private HandlerFuture GetSingleHandler(ScriptTree.Node node)
+    {
+        Debug.Assert(!node.Name.Contains("Event") && node.Name != "");
+
+        Type t = Type.GetType("Assets.Core.Handler." + node.Base);
+        var handler = Activator.CreateInstance(t, new Params(node.Params)) as HandlerFuture;
+
+        return handler;
+    }
+
+    private EventPromise GetSingleEvent(ScriptTree.Node node)
+    {
+        Debug.Assert(node.Name.Contains("Event"));
+
+        Type t = Type.GetType("Assets.Core.Event." + node.Base);
+        var evt = Activator.CreateInstance(t, new Params(node.Params)) as EventPromise;
+        return evt;
     }
 
     private AudioSource AddAudioSourceToScene(String audioFilePath)

@@ -38,6 +38,12 @@ namespace Assets.Core
             routine = (ps) => After(ps, prevRoutine(ps), genNextHandler);
         }
 
+        public void GroupAfter(Func<Params, HandlerFuture> genNextHandler)
+        {
+            Func<Params, IEnumerator<Params>> prevRoutine = routine;
+            routine = (ps) => GroupAfter(ps, prevRoutine(ps), genNextHandler);
+        }
+
         /* Set Next Handler to be run after this ends, but this one runs on another coroutine */
         public void SetNewAfter(Func<Params, HandlerFuture> genNextHandler)
         {
@@ -58,6 +64,32 @@ namespace Assets.Core
                     yield break;
                 }
                 yield return prevRoutine.Current;
+            }
+        }
+
+        private IEnumerator<Params> GroupAfter(Params ps, IEnumerator<Params> prevRoutine, Func<Params, HandlerFuture> genNextHandler)
+        {
+            IEnumerator<Params> nextRoutine = null;
+            while (true)
+            {
+                if (nextRoutine != null)
+                {
+                    nextRoutine.MoveNext();
+                    yield return nextRoutine.Current;
+                }
+                else
+                {
+                    prevRoutine.MoveNext();
+                    if (prevRoutine.Current == null)
+                    {
+                        nextRoutine = genNextHandler(ps).GetCoroutine();
+                        prevRoutine.Dispose();
+                        nextRoutine.MoveNext();
+                        yield return nextRoutine.Current;
+                        continue;
+                    }
+                    yield return prevRoutine.Current;
+                }
             }
         }
 

@@ -12,13 +12,14 @@ namespace Assets.Core.Event
         int channel;
         Midi.MidiMessage.Type type;
 
-        public ClipMidiEvent() { }
+        public ClipMidiEvent():base(Params.Empty) { }
 
-        public ClipMidiEvent(String clipName, int channel, Midi.MidiMessage.Type type)
+        public ClipMidiEvent(Params ps)
+            :base(ps)
         {
-            this.clipName = clipName;
-            this.channel = channel;
-            this.type = type;
+            this.clipName = ps.GetString("ClipName");
+            this.channel = ps.GetInt("Channel");
+            this.type = (Midi.MidiMessage.Type)Enum.Parse(typeof(Midi.MidiMessage.Type), ps.GetString("MessageType"));
         }
 
         protected override Dictionary<string, Action> GetUpdates()
