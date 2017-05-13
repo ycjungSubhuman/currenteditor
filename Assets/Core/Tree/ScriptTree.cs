@@ -8,6 +8,7 @@ using YamlDotNet.Serialization.NamingConventions;
 using YamlDotNet.RepresentationModel;
 using Assets.Timeline;
 using Assets.Timeline.SubWindows;
+using UnityEngine;
 
 namespace Assets.Core.Tree
 {
@@ -46,11 +47,11 @@ namespace Assets.Core.Tree
                     result.StartMember = (from c in g.connections
                                           where c.outPoint == g.startPoint
                                           select c.inPoint.masterNode.nodeName)
-                                          .SingleOrDefault();
+                                          .First();
                     result.EndMember = (from c in g.connections
                                         where c.inPoint == g.endPoint
                                         select c.outPoint.masterNode.nodeName)
-                                          .SingleOrDefault();
+                                          .First();
                 }
                 else
                 {

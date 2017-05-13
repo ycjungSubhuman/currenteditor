@@ -30,8 +30,8 @@ namespace Assets.Timeline.SubWindows
         Func<List<NodeWindow>> getEvents;
         Func<string, NodeWindow, string> getNewName;
         public Group(List<NodeWindow> initialNodes, List<Connection> initialConnections, string initialName, Vector2 position, float width, GUIStyle inPointStyle, GUIStyle outPointStyle, 
-            Action<Connection.Point> onClickInPoint, Action<Connection.Point> onClickOutPoint, Action<NodeWindow> onClickRemove, Action onClickGroup, Func<List<NodeWindow>> getEvents, Action<Group> onClickDegroup, Action save, Func<string, NodeWindow, string> getNewName)
-            :base("", initialName, position, 200f, inPointStyle, outPointStyle, onClickInPoint, onClickOutPoint, onClickRemove, onClickGroup, getNewName)
+            Action<Connection.Point> onClickInPoint, Action<Connection.Point> onClickOutPoint, Action<NodeWindow> onClickRemove, Action onClickGroup, Func<List<NodeWindow>> getEvents, Action<Group> onClickDegroup, Action save, Func<string, NodeWindow, string> getNewName, Func<List<NodeWindow>> getSelectedNodes, Func<List<Connection>> getSelectedConnections)
+            :base("", initialName, position, 200f, inPointStyle, outPointStyle, onClickInPoint, onClickOutPoint, onClickRemove, onClickGroup, getNewName, getSelectedNodes, getSelectedConnections)
         {
             this.nodes = initialNodes;
             this.connections = initialConnections;
@@ -42,12 +42,14 @@ namespace Assets.Timeline.SubWindows
             this.onClickDegroup = onClickDegroup;
             foreach(var c in connections)
             {
-                c.onClickRemoveConnection = OnClickRemoveConnection;
+                c.onClickRemoveConnection = null;
             }
             foreach(var n in nodes)
             {
-                n.inPoint.onClickConnectionPoint = OnClickInPoint;
-                n.outPoint.onClickConnectionPoint = OnClickOutPoint;
+                n.inPoint.onClickConnectionPoint = null;
+                n.inPoint.style = new GUIStyle();
+                n.outPoint.onClickConnectionPoint = null;
+                n.outPoint.style = new GUIStyle();
                 n.style = (GUIStyle)"VCS_StickyNote";
                 n.selectedStyle = (GUIStyle)"VCS_StickyNote";
             }
@@ -59,12 +61,17 @@ namespace Assets.Timeline.SubWindows
                 float maxY = initialNodes.Aggregate(float.MinValue, (acc, n) => Math.Max(acc, n.rect.yMax));
                 float w = Math.Abs(minX - maxX);
                 float h = Math.Abs(minY - maxY);
-                startPoint = new Connection.GroupPoint(this, Connection.Point.Type.OUT, outPointStyle, OnClickStartPoint);
-                endPoint = new Connection.GroupPoint(this, Connection.Point.Type.IN, inPointStyle, OnClickEndPoint);
+                startPoint = new Connection.GroupPoint(this, Connection.Point.Type.OUT, new GUIStyle(), (_)=> { });
+                endPoint = new Connection.GroupPoint(this, Connection.Point.Type.IN, new GUIStyle(), (_)=> { });
 
 
                 rect = new Rect(minX - initialPaddingX, minY - initialPaddingY, w+2*initialPaddingX, h+2*initialPaddingY);
             }
+            var emptyStartPoint = nodes.Find(n => !connections.Any(c => c.inPoint == n.inPoint)).inPoint;
+            var emptyEndPoint = nodes.Find(n => !connections.Any(c => c.outPoint == n.outPoint)).outPoint;
+            connections.Add(new Connection(emptyStartPoint, startPoint, null, null));
+            connections.Add(new Connection(endPoint, emptyEndPoint, null, null));
+            Debug.Log(connections.Count);
         }
 
         public void OnClickRemoveConnection(Connection c)
@@ -208,6 +215,7 @@ namespace Assets.Timeline.SubWindows
         private void CreateGroupInterfaceConnection()
         {
             if (!connections.Any(c => c.inPoint == selectedInPoint && c.outPoint == selectedOutPoint))
+
             {
                 var dupStart = (from c in connections
                                 where c.outPoint == startPoint && c.inPoint == selectedInPoint

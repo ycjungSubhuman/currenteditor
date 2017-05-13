@@ -35,16 +35,24 @@ namespace Assets.Timeline.SubWindows
         Action<NodeWindow> onClickRemove;
         Action onClickGroup;
         Func<string, NodeWindow, string> getNewName;
+        Func<List<NodeWindow>> getSelectedNodes;
+        Func<List<Connection>> getSelectedConnections;
+        GUIStyle inPointStyle;
+        GUIStyle outPointStyle;
 
         public NodeWindow(String baseClassName, string initialName, Vector2 position, float width, 
             GUIStyle inPointStyle, 
-            GUIStyle outPointStyle, Action<Connection.Point> onClickInPoint, Action<Connection.Point> onClickOutPoint, Action<NodeWindow> onClickRemove, Action onClickGroup, Func<string, NodeWindow, string> getNewName)
+            GUIStyle outPointStyle, Action<Connection.Point> onClickInPoint, Action<Connection.Point> onClickOutPoint, Action<NodeWindow> onClickRemove, Action onClickGroup, Func<string, NodeWindow, string> getNewName, Func<List<NodeWindow>> getSelectedNodes, Func<List<Connection>> getSelectedConnections)
         {
             Type t = null;
             this.baseClassName = baseClassName;
             this.onClickRemove = onClickRemove;
             this.onClickGroup = onClickGroup;
             this.getNewName = getNewName;
+            this.getSelectedNodes = getSelectedNodes;
+            this.getSelectedConnections = getSelectedConnections;
+            this.inPointStyle = inPointStyle;
+            this.outPointStyle = outPointStyle;
             nodeName = initialName;
             editNodeName = nodeName;
             if (baseClassName.Contains("Event"))
@@ -95,6 +103,11 @@ namespace Assets.Timeline.SubWindows
                 style = (GUIStyle)"flow node 1";
                 selectedStyle = (GUIStyle)"flow node 1 on";
             }
+            if (inPoint != null && outPoint != null)
+            {
+                inPoint.style = inPointStyle;
+                outPoint.style = outPointStyle;
+            }
         }
 
         public virtual void Drag(Vector2 delta)
@@ -139,15 +152,15 @@ namespace Assets.Timeline.SubWindows
                 string value = paramPairs[i].Value;
                 string newValue = value;
                 Rect labelRect = new Rect(rect.x + paramMarginX, rect.y + 40f + i * 20f, rect.width / 3 - 2 * paramMarginX, 16f);
-                Rect textRect = new Rect(rect.x + paramMarginX + rect.width / 3, rect.y + 40f + i * 20f, rect.width *2 / 3 - 2 * paramMarginX - buttonWidth, 16f);
+                Rect textRect = new Rect(rect.x + paramMarginX + rect.width / 3, rect.y + 40f + i * 20f, rect.width *2 / 3 - 2 * paramMarginX, 16f);
                 GUI.Label(labelRect, new GUIContent(name));
                 newValue = GUI.TextField(textRect, newValue);
-                if(GUI.Button(new Rect(textRect.x + textRect.width, textRect.y, buttonWidth, 18f), new GUIContent("Lnk")))
+                /*if(GUI.Button(new Rect(textRect.x + textRect.width, textRect.y, buttonWidth, 18f), new GUIContent("Lnk")))
                 {
                     linkDialogIndex = i;
                     linkDialogOn = true;
                     linkDialogRect = new Rect(textRect.x + textRect.width, textRect.y, 200f, 300f);
-                }
+                }*/
                 paramPairs[i] = new KeyValuePair<string, string>(name, newValue);
             }
         }
@@ -202,10 +215,28 @@ namespace Assets.Timeline.SubWindows
 
             return false;
         }
+        private bool IsSelectedNodesLinear()
+        {
+            var snodes = getSelectedNodes();
+            var sconns = getSelectedConnections();
+            return snodes.All(n => !n.isEvent) &&
+                sconns.All(c => c.conditions.Count == 0) &&
+                (sconns.Count == snodes.Count() - 1) &&
+                (new HashSet<Connection.Point>(sconns.Select(c => c.inPoint)).Count == sconns.Count) &&
+                (new HashSet<Connection.Point>(sconns.Select(c => c.outPoint)).Count == sconns.Count);
+
+        }
         protected virtual void AddMenuItems(GenericMenu menu)
         {
             menu.AddItem(new GUIContent("Delete Node?/Delete"), false, () => OnClickDelete());
-            menu.AddItem(new GUIContent("Make Group"), false, () => onClickGroup());
+            if (IsSelectedNodesLinear() && getSelectedNodes().Count > 1)
+            {
+                menu.AddItem(new GUIContent("Make Group"), false, () => onClickGroup());
+            }
+            else if(getSelectedNodes().Count > 1)
+            {
+                menu.AddDisabledItem(new GUIContent("Make Group(Select linear, uncut handlers without any conditions)"));
+            }
         }
 
         private void OnClickDelete()

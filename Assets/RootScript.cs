@@ -239,7 +239,7 @@ public class RootScript : MonoBehaviour {
             var curr = start;
             while (curr.Name != node.EndMember)
             {
-                Debug.Assert(curr.Succ != null && curr.Succ.Count == 1 && curr.Succ[0].Condition == null);
+                Debug.Assert(curr.Succ != null && curr.Succ.Count == 1 && curr.Succ[0].Condition.Count == 0);
                 var nextTree = node.Members.Find(m => m.Name == curr.Succ[0].Dest);
                 var next = GetSingleHandler(nextTree);
                 handler.GroupAfter((_) => next);

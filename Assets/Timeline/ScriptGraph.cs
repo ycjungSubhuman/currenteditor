@@ -64,7 +64,7 @@ namespace Assets.Timeline
                     var p = GetSystem(rn.Members);
                     SubWindows.Group g = new SubWindows.Group(p.Key, p.Value, rn.Name, new Vector2((float)rn.Position.X, (float)rn.Position.Y), 250, inPointStyle, outPointStyle,
                         OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup,
-                        Events, OnClickDegroup, Save, GetNewName);
+                        Events, OnClickDegroup, Save, GetNewName, SelectedNodes, SelectedConnections);
                     var start = g.nodes.Find(n => n.nodeName == rn.StartMember);
                     var end = g.nodes.Find(n => n.nodeName == rn.EndMember);
                     if (start != null)
@@ -82,7 +82,7 @@ namespace Assets.Timeline
                 else
                 {
                     node = new NodeWindow(rn.Base, rn.Name, new Vector2((float)rn.Position.X, (float)rn.Position.Y),
-                        250, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup, GetNewName);
+                        250, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup, GetNewName, SelectedNodes, SelectedConnections);
                     node.paramPairs = rn.Params.ToList();
                     node.nodeName = rn.Name;
                 }
@@ -425,13 +425,28 @@ namespace Assets.Timeline
         private void OnClickAddNode(Vector2 mousePosition, string className)
         {
             string initialName = GetNewName(className, null);
-            nodes.Add(new NodeWindow(className, initialName, mousePosition, 250, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup, GetNewName));
+            nodes.Add(new NodeWindow(className, initialName, mousePosition, 250, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup, GetNewName, SelectedNodes, SelectedConnections));
             Save();
         }
         protected void Save()
         {
             ScriptTree tree = ScriptTree.Construct(this);
             Meta.SaveScripts(currScriptName, tree);
+        }
+
+        private List<NodeWindow> SelectedNodes()
+        {
+            return (from n in nodes
+                    where n.selected
+                    select n).ToList();
+        }
+
+        private List<Connection> SelectedConnections()
+        {
+            var snodes = SelectedNodes();
+            return (from c in connections
+                    where snodes.Any(n => n.inPoint == c.inPoint) && snodes.Any(n => n.outPoint == c.outPoint)
+                    select c).ToList();
         }
 
         private string GetNewName(string baseName, NodeWindow exceptNode)
@@ -481,7 +496,7 @@ namespace Assets.Timeline
             var kidnappedNodes = nodes.Where(n => n.selected);
             var kidnappedConnections = connections.Where(c => kidnappedNodes.Contains(c.inPoint.masterNode) && kidnappedNodes.Contains(c.outPoint.masterNode));
 
-            nodes.Add(new SubWindows.Group(kidnappedNodes.ToList(), kidnappedConnections.ToList(), GetNewName("Group", null), new Vector2(0, 0), 200f, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup, Events, OnClickDegroup, Save, GetNewName));
+            nodes.Add(new SubWindows.Group(kidnappedNodes.ToList(), kidnappedConnections.ToList(), GetNewName("Group", null), new Vector2(0, 0), 200f, inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, OnClickGroup, Events, OnClickDegroup, Save, GetNewName, SelectedNodes, SelectedConnections));
             OnClickRemoveNode(null);
             Save();
         }

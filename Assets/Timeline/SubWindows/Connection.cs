@@ -60,7 +60,7 @@ namespace Assets.Timeline.SubWindows
                 );
 
             if(stopPrev)
-                GUI.Box(new Rect(o.x, o.y, 100f, 20f), new GUIContent("Stop"), (GUIStyle)"OL Minus");
+                GUI.Box(new Rect(i.x - 50f, i.y, 100f, 20f), new GUIContent("Stop"), (GUIStyle)"OL Minus");
 
             for(int j=0; j<conditions.Count; j++)
             {
@@ -72,7 +72,8 @@ namespace Assets.Timeline.SubWindows
 
             Vector2 wh = new Vector2(btnWidth, btnHeight);
             connRect = new Rect((i + o + inTangent + outTangent - wh * 0.5f) * 0.5f, wh);
-            GUI.Box(connRect, new GUIContent(), (GUIStyle)"flow var 4");
+            if(onClickRemoveConnection != null && getEvents != null)
+                GUI.Box(connRect, new GUIContent(), (GUIStyle)"flow var 4");
         }
         const float btnWidth = 20f;
         const float btnHeight = 20f;
@@ -83,7 +84,7 @@ namespace Assets.Timeline.SubWindows
             switch (e.type)
             {
                 case EventType.MouseDown:
-                    if(connRect.Contains(e.mousePosition))
+                    if(connRect.Contains(e.mousePosition) && onClickRemoveConnection != null && getEvents != null)
                     {
                         HandleContextMenu();
                         return true;
@@ -132,7 +133,7 @@ namespace Assets.Timeline.SubWindows
                 this.type = type;
                 this.style = style;
                 this.onClickConnectionPoint = onClick;
-                rect = new Rect(0, 0, 10f, 20f);
+                rect = new Rect(0, 0, 20f, 20f);
             }
 
             public virtual void Draw()
