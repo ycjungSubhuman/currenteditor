@@ -52,12 +52,13 @@ public class RootScript : MonoBehaviour {
                 .Add("Duration", "0.5");
             EventPromise px = new KeyDownEvent(Params.Empty.Add("KeyCode", "X"));
             EventPromise pc = new KeyDownEvent(Params.Empty.Add("KeyCode", "C"));
-            var h = new MoveConstant(rightParams);
-            var v = new MoveConstant(downParams);
-            v.AddAfter((_) => h);
-            h.AddAfter((_) => v);
+            var right = new MoveConstant(rightParams);
+            var down = new MoveConstant(downParams);
+            right.AddExternalCondition(pc, (_) => down, true);
+            right.AddExternalCondition(px, (_) => down, true);
+            right.AddAfter((_) => right);
 
-            return v;
+            return right;
         }
         );
         p.Handler.Begin();
@@ -122,17 +123,18 @@ public class RootScript : MonoBehaviour {
             }
             foreach (var evtp in eventMap)
             {
+                Debug.Log(evtp.Key);
                 var evtNode = nodes.Find(n => n.Name == evtp.Key);
-                if (evtNode.Succ != null)
+                if (evtNode.Succ != null && evtNode.Succ.Count != 0)
                 {
                     foreach (var succ in evtNode.Succ)
                     {
                         var handler = ConstructHandler(new List<StackElement>(), handlerMap, eventMap, nodes, nodes.Find(n => n.Name == succ.Dest));
                         evtp.Value.Handler.SetNewAfter((_) => handler);
-                        evtp.Value.StartPollUpdateGlobal();
-                        evtp.Value.Handler.Begin();
                     }
+                    evtp.Value.StartPollUpdateGlobal();
                 }
+                evtp.Value.Handler.Begin();
             }
         }
     }
@@ -156,13 +158,26 @@ public class RootScript : MonoBehaviour {
         public ScriptTree.Node Node;
         public ScriptTree.Succ PrevSucc;
     }
+    class CycleElement
+    {
+        public CycleElement(HandlerFuture a, ScriptTree.Succ succ, HandlerFuture b)
+        {
+            this.A = a;
+            this.Succ = succ;
+            this.B = b;
+        }
+        public HandlerFuture A;
+        public ScriptTree.Succ Succ;
+        public HandlerFuture B;
+    }
 
     private HandlerFuture ConstructHandler(List<StackElement> stack, Dictionary<string, HandlerFuture> handlerMap, Dictionary<string, EventPromise> eventMap, List<ScriptTree.Node> nodes, ScriptTree.Node startNode)
     {
         var currHandler = GetSingleHandler(startNode);
         stack.Add(new StackElement(startNode.Name, currHandler, startNode, null));
         StackElement lastPopped = null;
-        List<KeyValuePair<HandlerFuture, HandlerFuture>> cycleList = new List<KeyValuePair<HandlerFuture, HandlerFuture>>();
+        List<CycleElement> cycleList = new List<CycleElement>();
+        if (handlerMap.ContainsKey(startNode.Name)) return handlerMap[startNode.Name];
         while (stack.Count > 0)
         {
             if(stack.Last().Node.Succ != null)
@@ -176,7 +191,7 @@ public class RootScript : MonoBehaviour {
                         var cyclePoints = stack.FindAll(e => e.Name == succ.Dest);
                         foreach (var p in cyclePoints)
                         {
-                            cycleList.Add(new KeyValuePair<HandlerFuture, HandlerFuture>(stack.Last().Handler, p.Handler));
+                            cycleList.Add(new CycleElement(stack.Last().Handler, succ, p.Handler));
                         }
                     }
                     else
@@ -194,9 +209,9 @@ public class RootScript : MonoBehaviour {
             }
             handlerMap.Add(lastPopped.Name, lastPopped.Handler);
         }
-        foreach (var p in cycleList)
+        foreach (var cycle in cycleList)
         {
-            p.Key.AddAfter((_) => p.Value);
+            ApplySucc(eventMap, cycle.A, cycle.Succ, cycle.B);
         }
         return lastPopped.Handler;
     }

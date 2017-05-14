@@ -5,3 +5,5 @@ scriptgraphs:
 clips:
   - name: testclip1
     path: clips/testclip1
+  - name: demo_bass_1
+    path: clips/demo_bass_1

@@ -69,12 +69,12 @@ namespace Assets.Timeline
                     var end = g.nodes.Find(n => n.nodeName == rn.EndMember);
                     if (start != null)
                     {
-                        var startConn = new Connection(start.inPoint, g.startPoint, g.OnClickRemoveConnection, () => new List<NodeWindow>());
+                        var startConn = new Connection(start.inPoint, g.startPoint, null, null);
                         g.connections.Add(startConn);
                     }
                     if (end != null)
                     {
-                        var endConn = new Connection(g.endPoint, end.outPoint, g.OnClickRemoveConnection, () => new List<NodeWindow>());
+                        var endConn = new Connection(g.endPoint, end.outPoint, null, null);
                         g.connections.Add(endConn);
                     }
                     node = g;

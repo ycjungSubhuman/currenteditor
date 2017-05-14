@@ -1,1 +1,145 @@
-nodes: []
+nodes:
+- name: DoNothing (2)
+  base: DoNothing
+  params: {}
+  position:
+    x: 1550
+    y: 640
+  succ: []
+- name: noteoff
+  base: ClipMidiEvent
+  params:
+    ClipName: demo_bass_1
+    Channel: 1
+    MessageType: NOTE_OFF
+  position:
+    x: -269
+    y: 87
+  succ: []
+- name: KeyDownEvent (2)
+  base: KeyDownEvent
+  params:
+    KeyCode: Z
+  position:
+    x: 57
+    y: 508
+  succ:
+  - dest: PlayClip
+    condition: []
+- name: PlayClip
+  base: PlayClip
+  params:
+    ClipName: demo_bass_1
+    Loop: true
+  position:
+    x: 392
+    y: 650
+  succ: []
+- name: KeyDownEvent (1)
+  base: KeyDownEvent
+  params:
+    KeyCode: X
+  position:
+    x: -195
+    y: 387
+  succ:
+  - dest: Wait (2)
+    condition: []
+- name: Wait (2)
+  base: Wait
+  params:
+    Duration: inf
+  position:
+    x: 17
+    y: 164
+  succ:
+  - dest: Group (2)
+    endPrev: true
+    condition:
+    - noteon
+- name: noteon
+  base: ClipMidiEvent
+  params:
+    ClipName: demo_bass_1
+    Channel: 1
+    MessageType: NOTE_ON
+  position:
+    x: -382
+    y: 233
+  succ: []
+- name: Group (2)
+  base: ''
+  position:
+    x: 433
+    y: 28
+  succ:
+  - dest: Group (1)
+    endPrev: true
+    condition:
+    - noteon
+  members:
+  - name: InterpolateMove (5)
+    base: InterpolateMove
+    params:
+      Target: test1
+      Curve: EaseOut
+      Delta: 6.00|0.000|0.000
+      Time: 0.1
+    position:
+      x: 463
+      y: 113
+    succ:
+    - dest: Wait (1)
+      condition: []
+  - name: Wait (1)
+    base: Wait
+    params:
+      Duration: inf
+    position:
+      x: 782
+      y: 48
+    succ: []
+  startMember: InterpolateMove (5)
+  endMember: Wait (1)
+- name: Group (1)
+  base: ''
+  position:
+    x: 786
+    y: 374
+  succ:
+  - dest: Group (2)
+    endPrev: true
+    condition:
+    - noteon
+  members:
+  - name: InterpolateMove (6)
+    base: InterpolateMove
+    params:
+      Target: test1
+      Curve: EaseOut
+      Delta: -6.00|0.000|0.000
+      Time: 0.1
+    position:
+      x: 816
+      y: 394
+    succ:
+    - dest: Wait (3)
+      condition: []
+  - name: Wait (3)
+    base: Wait
+    params:
+      Duration: inf
+    position:
+      x: 1101
+      y: 559
+    succ: []
+  startMember: InterpolateMove (6)
+  endMember: Wait (3)
+- name: KeyDownEvent (3)
+  base: KeyDownEvent
+  params:
+    KeyCode: C
+  position:
+    x: 160
+    y: 336
+  succ: []

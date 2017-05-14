@@ -50,10 +50,14 @@ namespace Assets.Core
         {
             return int.Parse(map[nameKey]);
         }
+        public float GetFloat(String nameKey)
+        {
+            return float.Parse(map[nameKey]);
+        }
 
         public bool GetBool(String nameKey)
         {
-            return bool.Parse(nameKey);
+            return bool.Parse(map[nameKey]);
         }
 
         public Duration GetDuration(string nameKey)

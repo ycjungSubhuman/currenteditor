@@ -47,9 +47,7 @@ namespace Assets.Timeline.SubWindows
             foreach(var n in nodes)
             {
                 n.inPoint.onClickConnectionPoint = null;
-                n.inPoint.style = new GUIStyle();
                 n.outPoint.onClickConnectionPoint = null;
-                n.outPoint.style = new GUIStyle();
                 n.style = (GUIStyle)"VCS_StickyNote";
                 n.selectedStyle = (GUIStyle)"VCS_StickyNote";
             }
@@ -64,7 +62,6 @@ namespace Assets.Timeline.SubWindows
                 startPoint = new Connection.GroupPoint(this, Connection.Point.Type.OUT, new GUIStyle(), (_)=> { });
                 endPoint = new Connection.GroupPoint(this, Connection.Point.Type.IN, new GUIStyle(), (_)=> { });
 
-
                 rect = new Rect(minX - initialPaddingX, minY - initialPaddingY, w+2*initialPaddingX, h+2*initialPaddingY);
             }
             var emptyStartPoint = nodes.Find(n => !connections.Any(c => c.inPoint == n.inPoint)).inPoint;
@@ -74,163 +71,10 @@ namespace Assets.Timeline.SubWindows
             Debug.Log(connections.Count);
         }
 
-        public void OnClickRemoveConnection(Connection c)
-        {
-            connections.Remove(c);
-            save();
-        }
         protected override void AddMenuItems(GenericMenu menu)
         {
             base.AddMenuItems(menu);
             menu.AddItem(new GUIContent("Degroup"), false, ()=>onClickDegroup(this));
-        }
-
-        private void DrawConnectionPreview(Event e)
-        {
-
-            Vector2 i;
-            Vector2 o;
-            Vector2 inTangent = Vector2.left * 80f;
-            Vector2 outTangent = Vector2.right * 80f;
-
-            if (selectedInPoint != null && selectedOutPoint == null)
-            {
-                i = selectedInPoint.rect.center;
-                o = e.mousePosition;
-            }
-            else if (selectedInPoint == null && selectedOutPoint != null)
-            {
-                i = e.mousePosition;
-                o = selectedOutPoint.rect.center;
-            }
-            else return;
-
-            if(i.x <= o.x)
-            {
-                if(i.y < o.y)
-                {
-                    inTangent += Vector2.up * 40f;
-                    outTangent += Vector2.up * 100f;
-                }
-                else
-                {
-                    inTangent += Vector2.down * 40f;
-                    outTangent += Vector2.down * 100f;
-                }
-            }
-
-            Handles.DrawBezier(
-                i,
-                o,
-                i + inTangent,
-                o + outTangent,
-                Color.white,
-                null,
-                2f
-                );
-            GUI.changed = true;
-        }
-
-        private void OnClickStartPoint(Connection.Point startPoint)
-        {
-            var duplicates = from c in connections
-                             where c.outPoint == startPoint
-                             select c;
-            bool changed = false;
-            foreach (var d in duplicates)
-            {
-                if (selectedInPoint != null)
-                {
-                    d.inPoint = selectedInPoint;
-                    ClearConnectionSelection();
-                    changed = true;
-                }
-            }
-
-            if(!changed)
-                OnClickOutPoint(startPoint);
-        }
-
-        private void OnClickEndPoint(Connection.Point endPoint)
-        {
-            var duplicates = from c in connections
-                             where c.inPoint == endPoint
-                             select c;
-            bool changed = false;
-            foreach (var d in duplicates)
-            {
-                if(selectedOutPoint != null)
-                {
-                    d.outPoint = selectedOutPoint;
-                    ClearConnectionSelection();
-                    changed = true;
-                }
-            }
-
-            if(!changed)
-                OnClickInPoint(endPoint);
-        }
-
-        private void OnClickInPoint(Connection.Point inPoint)
-        {
-            selectedInPoint = inPoint;
-
-            if(selectedOutPoint != null)
-            {
-                if (selectedInPoint == endPoint || selectedOutPoint == startPoint)
-                    CreateGroupInterfaceConnection();
-                else
-                    CreateConnection();
-                ClearConnectionSelection();
-            }
-        }
-
-        private void OnClickOutPoint(Connection.Point outPoint)
-        {
-            selectedOutPoint = outPoint;
-
-            if(selectedInPoint != null)
-            {
-                if (selectedInPoint == endPoint || selectedOutPoint == startPoint)
-                    CreateGroupInterfaceConnection();
-                else
-                    CreateConnection();
-                ClearConnectionSelection();
-            }
-        }
-
-        private void CreateConnection()
-        {
-            if(!connections.Any(c => c.inPoint == selectedInPoint && c.outPoint == selectedOutPoint))
-                connections.Add(new Connection(selectedInPoint, selectedOutPoint, OnClickRemoveConnection, () => new List<NodeWindow>(){ }));
-            save();
-        }
-
-        private void ClearConnectionSelection()
-        {
-            selectedInPoint = null;
-            selectedOutPoint = null;
-        }
-
-        private void CreateGroupInterfaceConnection()
-        {
-            if (!connections.Any(c => c.inPoint == selectedInPoint && c.outPoint == selectedOutPoint))
-
-            {
-                var dupStart = (from c in connections
-                                where c.outPoint == startPoint && c.inPoint == selectedInPoint
-                                select c).SingleOrDefault();
-                var dupEnd = (from c in connections
-                              where c.inPoint == endPoint && c.outPoint == selectedOutPoint
-                              select c).SingleOrDefault();
-                if (dupStart == null && dupEnd == null)
-                    connections.Add(new Connection(selectedInPoint, selectedOutPoint, OnClickRemoveConnection, getEvents));
-                else if (dupEnd == null)
-                    dupStart.inPoint = selectedInPoint;
-                else
-                    dupEnd.outPoint = selectedOutPoint;
-            }
-            save();
         }
 
         public override void Draw()
@@ -238,7 +82,6 @@ namespace Assets.Timeline.SubWindows
             base.Draw();
             startPoint.Draw();
             endPoint.Draw();
-            DrawConnectionPreview(Event.current);
             GUI.changed = true;
         }
 
@@ -280,10 +123,6 @@ namespace Assets.Timeline.SubWindows
             foreach (var c in connections)
             {
                 c.OnGUIEvent(e);
-            }
-            if (e.type == EventType.MouseDown)
-            {
-                ClearConnectionSelection();
             }
             return a;
         }

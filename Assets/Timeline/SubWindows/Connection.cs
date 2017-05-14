@@ -39,13 +39,13 @@ namespace Assets.Timeline.SubWindows
             {
                 if(i.y < o.y)
                 {
-                    inTangent += Vector2.up * 40f;
-                    outTangent += Vector2.up * 100f;
+                    inTangent += Vector2.up * 200f;
+                    outTangent += Vector2.up * 200f;
                 }
                 else
                 {
-                    inTangent += Vector2.down * 40f;
-                    outTangent += Vector2.down * 100f;
+                    inTangent += Vector2.down * 200f;
+                    outTangent += Vector2.down * 200f;
                 }
             }
 
@@ -59,13 +59,11 @@ namespace Assets.Timeline.SubWindows
                 2f
                 );
 
-            if(stopPrev)
-                GUI.Box(new Rect(i.x - 50f, i.y, 100f, 20f), new GUIContent("Stop"), (GUIStyle)"OL Minus");
 
             for(int j=0; j<conditions.Count; j++)
             {
                 NodeWindow evt = conditions[j];
-                float condWidth = GUI.skin.label.CalcSize(new GUIContent(evt.nodeName)).x;
+                float condWidth = GUI.skin.label.CalcSize(new GUIContent(evt.nodeName)).x + 10f;
                 Vector2 condPos = (i + o + inTangent + outTangent - new Vector2(condWidth, condHeight)) * 0.5f;
                 GUI.Label(new Rect(condPos.x, condPos.y+30f+j*(condHeight+2f), condWidth, condHeight), new GUIContent(evt.nodeName), (GUIStyle)"AssetLabel");
             }
@@ -74,6 +72,9 @@ namespace Assets.Timeline.SubWindows
             connRect = new Rect((i + o + inTangent + outTangent - wh * 0.5f) * 0.5f, wh);
             if(onClickRemoveConnection != null && getEvents != null)
                 GUI.Box(connRect, new GUIContent(), (GUIStyle)"flow var 4");
+
+            if(stopPrev)
+                GUI.Box(new Rect(connRect.x, connRect.y - 20f, 200f, connRect.height), new GUIContent("Stop"), (GUIStyle)"OL Minus");
         }
         const float btnWidth = 20f;
         const float btnHeight = 20f;

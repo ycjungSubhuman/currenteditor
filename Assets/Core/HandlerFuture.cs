@@ -121,6 +121,7 @@ namespace Assets.Core
         
         private IEnumerator<Params> CheckingExternalCondition(Params ps, IEnumerator<Params> prevRoutine, EventPromise externalPromise, Func<Params, HandlerFuture> genNextHandler, bool stopOnTrigger)
         {
+            externalPromise.Reset();
             while(true)
             {
                 prevRoutine.MoveNext();
