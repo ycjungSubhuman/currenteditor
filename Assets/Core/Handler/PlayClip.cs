@@ -24,7 +24,8 @@ namespace Assets.Core.Handler
             clip.Audio.loop = loop;
             clip.Play();
             yield return ps;
-            while(clip.Audio.isPlaying)
+            //while(clip.Audio.isPlaying)
+            while(clip.Audio.time < clip.ExpectedTime - Time.deltaTime)
             {
                 clip.UpdateTime();
                 yield return ps;

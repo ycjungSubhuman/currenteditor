@@ -14,6 +14,13 @@ namespace Assets.Core
         private IEnumerable<Midi.MidiMessage> originalMidiMessages = new List<Midi.MidiMessage>();
         private double currTime;
         public double CurrTime { get { return currTime; } }
+        public double ExpectedTime
+        {
+            get
+            {
+                return audio.clip.length;
+            }
+        }
 
         public AudioSource Audio { get { return audio; } }
         public Midi.Midi Midi { get { return midi; } }
@@ -33,7 +40,10 @@ namespace Assets.Core
         public void Play()
         {
             currTime = 0;
+            midiMessages = originalMidiMessages.Select(m => m);
+            nonActive = midiMessages.Select(m => m).ToList();
             audio.Play();
+            UpdateTime();
         }
 
         List<Midi.MidiMessage> nonActive;

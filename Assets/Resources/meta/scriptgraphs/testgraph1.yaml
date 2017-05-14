@@ -1,47 +1,30 @@
 nodes:
-- name: DoNothing (2)
-  base: DoNothing
-  params: {}
-  position:
-    x: 1550
-    y: 640
-  succ: []
-- name: noteoff
-  base: ClipMidiEvent
-  params:
-    ClipName: demo_bass_1
-    Channel: 1
-    MessageType: NOTE_OFF
-  position:
-    x: -269
-    y: 87
-  succ: []
 - name: KeyDownEvent (2)
   base: KeyDownEvent
   params:
     KeyCode: Z
   position:
-    x: 57
-    y: 508
+    x: 10
+    y: 664
   succ:
-  - dest: PlayClip
+  - dest: PlayClip (2)
     condition: []
-- name: PlayClip
+- name: PlayClip (2)
   base: PlayClip
   params:
     ClipName: demo_bass_1
-    Loop: true
+    Loop: false
   position:
-    x: 392
-    y: 650
+    x: 373
+    y: 642
   succ: []
 - name: KeyDownEvent (1)
   base: KeyDownEvent
   params:
     KeyCode: X
   position:
-    x: -195
-    y: 387
+    x: -46
+    y: 386
   succ:
   - dest: Wait (2)
     condition: []
@@ -50,8 +33,8 @@ nodes:
   params:
     Duration: inf
   position:
-    x: 17
-    y: 164
+    x: 331
+    y: 372
   succ:
   - dest: Group (2)
     endPrev: true
@@ -64,14 +47,14 @@ nodes:
     Channel: 1
     MessageType: NOTE_ON
   position:
-    x: -382
-    y: 233
+    x: 12
+    y: 171
   succ: []
 - name: Group (2)
   base: ''
   position:
-    x: 433
-    y: 28
+    x: 721
+    y: 311
   succ:
   - dest: Group (1)
     endPrev: true
@@ -86,8 +69,8 @@ nodes:
       Delta: 6.00|0.000|0.000
       Time: 0.1
     position:
-      x: 463
-      y: 113
+      x: 751
+      y: 396
     succ:
     - dest: Wait (1)
       condition: []
@@ -96,16 +79,16 @@ nodes:
     params:
       Duration: inf
     position:
-      x: 782
-      y: 48
+      x: 1070
+      y: 331
     succ: []
   startMember: InterpolateMove (5)
   endMember: Wait (1)
 - name: Group (1)
   base: ''
   position:
-    x: 786
-    y: 374
+    x: 1420
+    y: 307
   succ:
   - dest: Group (2)
     endPrev: true
@@ -120,8 +103,8 @@ nodes:
       Delta: -6.00|0.000|0.000
       Time: 0.1
     position:
-      x: 816
-      y: 394
+      x: 1450
+      y: 327
     succ:
     - dest: Wait (3)
       condition: []
@@ -130,16 +113,8 @@ nodes:
     params:
       Duration: inf
     position:
-      x: 1101
-      y: 559
+      x: 1735
+      y: 492
     succ: []
   startMember: InterpolateMove (6)
   endMember: Wait (3)
-- name: KeyDownEvent (3)
-  base: KeyDownEvent
-  params:
-    KeyCode: C
-  position:
-    x: 160
-    y: 336
-  succ: []

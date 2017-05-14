@@ -239,7 +239,7 @@ public class RootScript : MonoBehaviour {
 
     private HandlerFuture GetSingleHandler(ScriptTree.Node node)
     {
-        Debug.Assert(!node.Name.Contains("Event"));
+        Debug.Assert(!node.Base.Contains("Event"));
 
         HandlerFuture handler = null;
         if (node.Members == null)
@@ -267,7 +267,7 @@ public class RootScript : MonoBehaviour {
 
     private EventPromise GetSingleEvent(ScriptTree.Node node)
     {
-        Debug.Assert(node.Name.Contains("Event"));
+        Debug.Assert(node.Base.Contains("Event"));
 
         Type t = Type.GetType("Assets.Core.Event." + node.Base);
         var evt = Activator.CreateInstance(t, new Params(node.Params)) as EventPromise;

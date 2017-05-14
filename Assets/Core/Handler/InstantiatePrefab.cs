@@ -18,8 +18,13 @@ namespace Assets.Core.Handler
         private IEnumerator<Params> Move(Params ps)
         {
             string prefabName = ps.GetString("Prefab");
+            string parentName = ps.GetString("Parent");
             GameObject prefab = Resources.Load<GameObject>(prefabName);
-            GameObject.Instantiate(prefab);
+            var g = GameObject.Instantiate(prefab);
+            if(parentName != "")
+            {
+                g.transform.parent = GameObject.Find(parentName).transform;
+            }
             yield return null;
             yield break;
         }
@@ -28,6 +33,7 @@ namespace Assets.Core.Handler
         {
             Dictionary<String, string> initial = new Dictionary<string, string>();
             initial.Add("Prefab", "");
+            initial.Add("Parent", "");
             return initial;
         }
     }
