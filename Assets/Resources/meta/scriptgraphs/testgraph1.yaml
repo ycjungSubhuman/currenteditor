@@ -4,8 +4,8 @@ nodes:
   params:
     KeyCode: Z
   position:
-    x: 10
-    y: 664
+    x: 49
+    y: -308
   succ:
   - dest: PlayClip (2)
     condition: []
@@ -15,16 +15,16 @@ nodes:
     ClipName: demo_bass_1
     Loop: false
   position:
-    x: 373
-    y: 642
+    x: 1510
+    y: -224
   succ: []
 - name: KeyDownEvent (1)
   base: KeyDownEvent
   params:
     KeyCode: X
   position:
-    x: -46
-    y: 386
+    x: -7
+    y: -586
   succ:
   - dest: Wait (2)
     condition: []
@@ -33,8 +33,8 @@ nodes:
   params:
     Duration: inf
   position:
-    x: 331
-    y: 372
+    x: 370
+    y: -600
   succ:
   - dest: Group (2)
     endPrev: true
@@ -47,14 +47,14 @@ nodes:
     Channel: 1
     MessageType: NOTE_ON
   position:
-    x: 12
-    y: 171
+    x: 51
+    y: -801
   succ: []
 - name: Group (2)
   base: ''
   position:
-    x: 721
-    y: 311
+    x: 760
+    y: -661
   succ:
   - dest: Group (1)
     endPrev: true
@@ -69,8 +69,8 @@ nodes:
       Delta: 6.00|0.000|0.000
       Time: 0.1
     position:
-      x: 751
-      y: 396
+      x: 790
+      y: -576
     succ:
     - dest: Wait (1)
       condition: []
@@ -79,16 +79,16 @@ nodes:
     params:
       Duration: inf
     position:
-      x: 1070
-      y: 331
+      x: 1109
+      y: -641
     succ: []
   startMember: InterpolateMove (5)
   endMember: Wait (1)
 - name: Group (1)
   base: ''
   position:
-    x: 1420
-    y: 307
+    x: 1459
+    y: -665
   succ:
   - dest: Group (2)
     endPrev: true
@@ -103,8 +103,8 @@ nodes:
       Delta: -6.00|0.000|0.000
       Time: 0.1
     position:
-      x: 1450
-      y: 327
+      x: 1489
+      y: -645
     succ:
     - dest: Wait (3)
       condition: []
@@ -113,8 +113,67 @@ nodes:
     params:
       Duration: inf
     position:
-      x: 1735
-      y: 492
+      x: 1774
+      y: -480
     succ: []
   startMember: InterpolateMove (6)
   endMember: Wait (3)
+- name: KeyDownEvent (3)
+  base: KeyDownEvent
+  params:
+    KeyCode: C
+  position:
+    x: 89
+    y: 138
+  succ:
+  - dest: Group (3)
+    condition: []
+- name: DoNothing (2)
+  base: DoNothing
+  params: {}
+  position:
+    x: 1437
+    y: 353
+  succ: []
+- name: KeyUpEvent
+  base: KeyUpEvent
+  params:
+    KeyCode: C
+  position:
+    x: 112
+    y: 353
+  succ: []
+- name: Group (3)
+  base: ''
+  position:
+    x: 438
+    y: 118
+  succ:
+  - dest: Group (3)
+    condition: []
+  - dest: DoNothing (2)
+    endPrev: true
+    condition:
+    - KeyUpEvent
+  members:
+  - name: InstantiatePrefab
+    base: InstantiatePrefab
+    params:
+      Prefab: bullet1
+      Parent: test1
+    position:
+      x: 468
+      y: 138
+    succ:
+    - dest: Wait (4)
+      condition: []
+  - name: Wait (4)
+    base: Wait
+    params:
+      Duration: 0.01
+    position:
+      x: 834
+      y: 216
+    succ: []
+  startMember: InstantiatePrefab
+  endMember: Wait (4)

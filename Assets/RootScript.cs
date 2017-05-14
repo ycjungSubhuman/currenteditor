@@ -182,7 +182,7 @@ public class RootScript : MonoBehaviour {
         {
             if(stack.Last().Node.Succ != null)
             {
-                var succ = stack.Last().Node.Succ.Where(s => !handlerMap.ContainsKey(s.Dest)).FirstOrDefault();
+                var succ = stack.Last().Node.Succ.Where(s => !handlerMap.ContainsKey(s.Dest) && !cycleList.Any(c => c.Succ == s)).FirstOrDefault();
                 if(succ != null)
                 {
                     var nextNode = nodes.Find(n => n.Name == succ.Dest);
@@ -193,6 +193,7 @@ public class RootScript : MonoBehaviour {
                         {
                             cycleList.Add(new CycleElement(stack.Last().Handler, succ, p.Handler));
                         }
+                        continue;
                     }
                     else
                     {

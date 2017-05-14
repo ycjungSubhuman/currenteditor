@@ -23,6 +23,7 @@ namespace Assets.Core.Event
             {
                 if (Input.GetKeyUp(keyCode))
                 {
+                    Debug.Log("WOEIFJOWEI");
                     Trigger(Params.Empty);
                 }
             }
