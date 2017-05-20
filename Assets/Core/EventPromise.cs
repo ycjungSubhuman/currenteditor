@@ -53,13 +53,14 @@ namespace Assets.Core
                 pair.Value();
             }
         }
-        public void Reset()
+        public virtual void Reset()
         {
             triggered = false;
         }
 
         public void Trigger(Params input)
         {
+            Debug.Log("woeif");
             triggered = true;
         }
 
@@ -68,10 +69,11 @@ namespace Assets.Core
             return triggered;
         }
 
-        //This may not be necessary, so not implementing right now
-        public void Fail(Exception e)
+        public EventPromise Clone()
         {
-            throw new NotImplementedException();
+            var cloned = (EventPromise)this.MemberwiseClone();
+            cloned.handler = new CustomHandler(WaitUntilTrigger, Params.Empty);
+            return cloned;
         }
 
         private IEnumerator<Params> WaitUntilTrigger(Params dummy)
@@ -80,6 +82,8 @@ namespace Assets.Core
             {
                 if (triggered)
                 {
+                    triggered = false;
+                    Debug.Log("woeifj");
                     yield return null;
                     triggered = false;
                 }

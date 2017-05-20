@@ -115,26 +115,26 @@ namespace Assets.Core
         public void AddExternalCondition(EventPromise externalPromise, Func<Params, HandlerFuture> genNextHandler, bool stopOnTrigger)
         {
             Func<Params, IEnumerator<Params>> prevRoutine = routine;
-            externalPromise.Handler.AddAfter(genNextHandler);
             routine = (ps) => CheckingExternalCondition(ps, prevRoutine(ps), externalPromise, genNextHandler, stopOnTrigger);
         }
         
         private IEnumerator<Params> CheckingExternalCondition(Params ps, IEnumerator<Params> prevRoutine, EventPromise externalPromise, Func<Params, HandlerFuture> genNextHandler, bool stopOnTrigger)
         {
-            externalPromise.Reset();
+            EventPromise clonedPromise = externalPromise.Clone();
+            clonedPromise.Reset();
             while(true)
             {
                 prevRoutine.MoveNext();
-                if (externalPromise.IsTriggered())
+                if (clonedPromise.IsTriggered())
                 {
-                    externalPromise.Reset();
+                    clonedPromise.Reset();
                     genNextHandler(ps).Begin();
                     if (stopOnTrigger)
                     {
                         yield break;
                     }
                 }
-                externalPromise.Update();
+                clonedPromise.Update();
                 yield return prevRoutine.Current;
                 if (prevRoutine.Current == null) yield break;
             }

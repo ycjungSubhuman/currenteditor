@@ -11,6 +11,8 @@ namespace Assets.Core.Event
         String clipName;
         int channel;
         Midi.MidiMessage.Type type;
+        Clip clip;
+        Clip.ClipTimeTracker tracker;
 
         public ClipMidiEvent():base(Params.Empty) { }
 
@@ -20,16 +22,22 @@ namespace Assets.Core.Event
             this.clipName = ps.GetString("ClipName");
             this.channel = ps.GetInt("Channel");
             this.type = (Midi.MidiMessage.Type)Enum.Parse(typeof(Midi.MidiMessage.Type), ps.GetString("MessageType"));
+            this.clip = MonoHelper.MonoFindClip(clipName);
+            this.tracker = clip.GetTracker();
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
+            this.tracker = clip.GetTracker();
         }
 
         public override Dictionary<string, Action> GetUpdates()
         {
-            Clip clip = MonoHelper.MonoFindClip(clipName);
-
             Dictionary<string, Action> updates = new Dictionary<string, Action>();
             updates.Add("MidiEvent"+clipName+channel+type, ()=> 
             {
-                if (clip.GetCurrMessages(channel, type).Count() > 0)
+                if (tracker.GetCurrMessages(channel, type).Count() > 0)
                 {
                     this.Trigger(Params.Empty);
                 }

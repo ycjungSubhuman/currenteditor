@@ -34,52 +34,71 @@ namespace Assets.Core
                 from msg in trk.Messages
                 select msg;
             this.midiMessages = originalMidiMessages.Select(m => m);
-            nonActive = midiMessages.Select(m => m).ToList();
         }
 
         public void Play()
         {
             currTime = 0;
-            midiMessages = originalMidiMessages.Select(m => m);
-            nonActive = midiMessages.Select(m => m).ToList();
-            audio.Play();
-            UpdateTime();
+            audio.time = 0;
+            audio.volume = 1.0f;
         }
-
-        double lastTime = 0;
-        List<Midi.MidiMessage> nonActive;
+        public void Stop()
+        {
+            audio.volume = 0.0f;
+        }
+        public ClipTimeTracker GetTracker()
+        {
+            return new ClipTimeTracker(audio, originalMidiMessages.ToList());
+        }
         public void UpdateTime()
         {
-            if (nonActive.Count() == 0 || currTime < lastTime)
-                midiMessages = originalMidiMessages.Select(m => m);
-            else
-                midiMessages = nonActive.Select(m => m);
-            lastTime = currTime;
-            currTime = audio.time;
-            nonActive = new List<Assets.Midi.MidiMessage>();
-            foreach (var msg in midiMessages)
-            {
-                if (Math.Abs(msg.Time - currTime) >= delta && msg.Time-delta > currTime)
-                {
-                    nonActive.Add(msg);
-                }
-            }
             currTime = audio.time;
         }
 
-        private const double delta = 0.02; //30ms
-        public IEnumerable<Midi.MidiMessage> GetCurrMessages(int channel, Midi.MidiMessage.Type type)
+        public class ClipTimeTracker
         {
-            List<Midi.MidiMessage> targets = new List<Assets.Midi.MidiMessage>();
-            foreach (var msg in midiMessages)
-            {
-                if(Math.Abs(msg.Time - currTime) < delta && audio.isPlaying && msg.Channel == channel && msg.MessageType == type)
-                {
-                    targets.Add(msg);
-                }
-            }
-            return targets;
-        }
+            public IEnumerable<Midi.MidiMessage> midiMessages;
+            private IEnumerable<Midi.MidiMessage> originalMidiMessages;
+            private AudioSource audio;
 
+            public ClipTimeTracker(AudioSource audio, List<Midi.MidiMessage> messages)
+            {
+                this.audio = audio;
+                this.midiMessages = messages.Where(m => Math.Abs(m.Time - audio.time) >= delta).Select(m => m);
+                this.originalMidiMessages = midiMessages.Select(m => m);
+            }
+
+            const float delta = 0.02f;
+            float lastTime = 0;
+            public IEnumerable<Midi.MidiMessage> GetCurrMessages(int channel, Midi.MidiMessage.Type type)
+            {
+                float currTime = audio.time;
+                if(lastTime>currTime)
+                {
+                    Refill();
+                }
+                lastTime = currTime;
+                List<Midi.MidiMessage> targets = new List<Assets.Midi.MidiMessage>();
+                List<Midi.MidiMessage> afterConsume = new List<Assets.Midi.MidiMessage>();
+                foreach (var msg in midiMessages)
+                {
+                    if (Math.Abs(msg.Time - currTime) < delta && audio.isPlaying && msg.Channel == channel && msg.MessageType == type)
+                    {
+                        targets.Add(msg);
+                    }
+                    else
+                    {
+                        afterConsume.Add(msg);
+                    }
+                }
+                midiMessages = afterConsume;
+                return targets;
+            }
+
+            public void Refill()
+            {
+                midiMessages = originalMidiMessages.Select(m => m);
+            }
+        }
     }
 }

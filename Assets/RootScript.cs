@@ -123,7 +123,6 @@ public class RootScript : MonoBehaviour {
             }
             foreach (var evtp in eventMap)
             {
-                Debug.Log(evtp.Key);
                 var evtNode = nodes.Find(n => n.Name == evtp.Key);
                 if (evtNode.Succ != null && evtNode.Succ.Count != 0)
                 {
@@ -206,6 +205,7 @@ public class RootScript : MonoBehaviour {
             stack = stack.Take(stack.Count - 1).ToList();
             if (stack.Count != 0)
             {
+                Debug.Log("Applying Succ " + stack.Last().Name +" -> " + lastPopped.Name);
                 ApplySucc(eventMap, stack.Last().Handler, lastPopped.PrevSucc, lastPopped.Handler);
             }
             handlerMap.Add(lastPopped.Name, lastPopped.Handler);
@@ -282,6 +282,8 @@ public class RootScript : MonoBehaviour {
         audioObject.AddComponent<AudioSource>();
         AudioSource audioSource = audioObject.GetComponent<AudioSource>();
         audioSource.clip = audioClip;
+        audioSource.volume = 0.0f;
+        audioSource.Play();
         return audioSource;
     }
 	
@@ -290,6 +292,14 @@ public class RootScript : MonoBehaviour {
 		foreach(Action action in MonoHelper.Updates.Values)
         {
             action();
+        }
+        foreach (var p in clips)
+        {
+            var clip = p.Value;
+            if(Math.Abs(clip.CurrTime - clip.Audio.time) > 0.05f)
+            {
+                clip.Stop();
+            }
         }
 	}
 }

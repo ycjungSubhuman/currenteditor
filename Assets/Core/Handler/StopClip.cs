@@ -18,17 +18,9 @@ namespace Assets.Core.Handler
         private IEnumerator<Params> Stop(Params ps)
         {
             String clipName = ps.GetString("ClipName");
-            bool pause = ps.GetBool("Pause");
             Clip clip = MonoHelper.MonoFindClip(clipName);
 
-            if (pause)
-            {
-                throw new NotImplementedException();
-            }
-            else
-            {
-                clip.Audio.Stop();
-            }
+            clip.Stop();
             yield return null;
             yield break;
         }
@@ -37,7 +29,6 @@ namespace Assets.Core.Handler
         {
             Dictionary<string, string> initial = new Dictionary<string, string>();
             initial.Add("ClipName", "");
-            initial.Add("Pause", "false");
             return initial;
         }
     }
