@@ -167,14 +167,7 @@ namespace Assets.Timeline
 
         private void HandleAdd()
         {
-            if(GUILayout.Button("Add New", GUILayout.MaxWidth(200f)))
-            {
 
-            }
-            if(GUILayout.Button("Remove", GUILayout.MaxWidth(200f)))
-            {
-
-            }
         }
 
         private void DrawGrid(float gridSpacing, float gridOpacity, Color gridColor)

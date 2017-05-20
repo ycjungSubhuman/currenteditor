@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using YamlDotNet;
 using System.Linq;
 
@@ -66,7 +67,7 @@ public class RootScript : MonoBehaviour {
 
     private void InitMetaData()
     {
-        var rootText = Resources.Load<TextAsset>("meta/root");
+        var rootText = Resources.Load<TextAsset>("meta/root"+SceneManager.GetActiveScene().name);
         var docStream = new StringReader(rootText.text);
         RootGraph root = RootGraph.Construct(docStream);
         foreach(var clip in root.Clips)

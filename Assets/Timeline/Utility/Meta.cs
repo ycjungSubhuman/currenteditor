@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Assets.Timeline.Utility
 {
@@ -16,7 +17,7 @@ namespace Assets.Timeline.Utility
             get
             {
                 Dictionary<string, ClipTree> clipGraphs = new Dictionary<string, ClipTree>();
-                var rootText = Resources.Load<TextAsset>("meta/root");
+                var rootText = Resources.Load<TextAsset>("meta/root"+SceneManager.GetActiveScene().name);
                 var docStream = new StringReader(rootText.text);
                 RootGraph root = RootGraph.Construct(docStream);
                 foreach (var clip in root.Clips)
@@ -36,7 +37,7 @@ namespace Assets.Timeline.Utility
             get
             {
                 Dictionary<string, ScriptTree> scriptTrees = new Dictionary<string, ScriptTree>();
-                var rootText = Resources.Load<TextAsset>("meta/root");
+                var rootText = Resources.Load<TextAsset>("meta/root"+SceneManager.GetActiveScene().name);
                 var docStream = new StringReader(rootText.text);
                 RootGraph root = RootGraph.Construct(docStream);
                 if (root.Scriptgraphs != null)

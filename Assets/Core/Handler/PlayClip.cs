@@ -28,7 +28,6 @@ namespace Assets.Core.Handler
             double lastTime = clip.CurrTime;
             while(loop || clip.CurrTime < clip.ExpectedTime)
             {
-                Debug.Log("curr: "+clip.CurrTime +"exp: "+clip.ExpectedTime);
                 lastTime = clip.CurrTime;
                 clip.UpdateTime();
                 yield return ps;
