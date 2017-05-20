@@ -13,12 +13,13 @@ namespace Assets.Core
         private IEnumerable<Midi.MidiMessage> midiMessages = new List<Midi.MidiMessage>();
         private IEnumerable<Midi.MidiMessage> originalMidiMessages = new List<Midi.MidiMessage>();
         private double currTime;
+        public bool updated = false;
         public double CurrTime { get { return currTime; } }
         public double ExpectedTime
         {
             get
             {
-                return audio.clip.length;
+                return audio.clip.length - 4*Time.deltaTime;
             }
         }
 
@@ -45,14 +46,18 @@ namespace Assets.Core
         public void Stop()
         {
             audio.volume = 0.0f;
+            loops = 0;
         }
         public ClipTimeTracker GetTracker()
         {
             return new ClipTimeTracker(audio, originalMidiMessages.ToList());
         }
+        int loops = 0;
         public void UpdateTime()
         {
-            currTime = audio.time;
+            if (audio.clip.length * loops + audio.time < currTime) loops++;
+            currTime = loops*audio.clip.length + audio.time;
+            updated = true;
         }
 
         public class ClipTimeTracker
@@ -65,14 +70,16 @@ namespace Assets.Core
             {
                 this.audio = audio;
                 this.midiMessages = messages.Where(m => Math.Abs(m.Time - audio.time) >= delta).Select(m => m);
-                this.originalMidiMessages = midiMessages.Select(m => m);
+                this.originalMidiMessages = messages.Select(m => m);
             }
 
             const float delta = 0.02f;
             float lastTime = 0;
             public IEnumerable<Midi.MidiMessage> GetCurrMessages(int channel, Midi.MidiMessage.Type type)
             {
-                float currTime = audio.time;
+                float currTime = 0f;
+                if (audio.volume != 0.0f) currTime = audio.time;
+                else return new List<Midi.MidiMessage>();
                 if(lastTime>currTime)
                 {
                     Refill();

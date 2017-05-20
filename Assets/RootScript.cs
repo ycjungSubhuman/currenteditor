@@ -282,6 +282,7 @@ public class RootScript : MonoBehaviour {
         audioObject.AddComponent<AudioSource>();
         AudioSource audioSource = audioObject.GetComponent<AudioSource>();
         audioSource.clip = audioClip;
+        audioSource.loop = true;
         audioSource.volume = 0.0f;
         audioSource.Play();
         return audioSource;
@@ -296,10 +297,11 @@ public class RootScript : MonoBehaviour {
         foreach (var p in clips)
         {
             var clip = p.Value;
-            if(Math.Abs(clip.CurrTime - clip.Audio.time) > 0.05f)
+            if(!clip.updated)
             {
                 clip.Stop();
             }
+            clip.updated = false;
         }
 	}
 }

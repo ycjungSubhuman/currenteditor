@@ -21,13 +21,15 @@ namespace Assets.Core.Handler
             bool loop = ps.GetBool("Loop");
             Clip clip = MonoHelper.MonoFindClip(clipName);
 
-            clip.Audio.loop = loop;
             clip.Play();
             clip.UpdateTime();
             yield return ps;
             //while(clip.Audio.isPlaying)
-            while(clip.Audio.time < clip.ExpectedTime - Time.deltaTime)
+            double lastTime = clip.CurrTime;
+            while(loop || clip.CurrTime < clip.ExpectedTime)
             {
+                Debug.Log("curr: "+clip.CurrTime +"exp: "+clip.ExpectedTime);
+                lastTime = clip.CurrTime;
                 clip.UpdateTime();
                 yield return ps;
             }
