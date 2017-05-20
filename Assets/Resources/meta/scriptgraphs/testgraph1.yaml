@@ -4,8 +4,8 @@ nodes:
   params:
     KeyCode: Z
   position:
-    x: 49
-    y: -308
+    x: -305
+    y: -219
   succ:
   - dest: PlayClip (2)
     condition: []
@@ -13,18 +13,18 @@ nodes:
   base: PlayClip
   params:
     ClipName: demo_bass_1
-    Loop: false
+    Loop: true
   position:
-    x: 1510
-    y: -224
+    x: 198
+    y: -231
   succ: []
 - name: KeyDownEvent (1)
   base: KeyDownEvent
   params:
     KeyCode: X
   position:
-    x: -7
-    y: -586
+    x: -395
+    y: -513
   succ:
   - dest: Wait (2)
     condition: []
@@ -33,8 +33,8 @@ nodes:
   params:
     Duration: inf
   position:
-    x: 370
-    y: -600
+    x: 6
+    y: -550
   succ:
   - dest: Group (2)
     endPrev: true
@@ -47,14 +47,14 @@ nodes:
     Channel: 1
     MessageType: NOTE_ON
   position:
-    x: 51
-    y: -801
+    x: -306
+    y: -729
   succ: []
 - name: Group (2)
   base: ''
   position:
-    x: 760
-    y: -661
+    x: 396
+    y: -614
   succ:
   - dest: Group (1)
     endPrev: true
@@ -69,8 +69,8 @@ nodes:
       Delta: 6.00|0.000|0.000
       Time: 0.1
     position:
-      x: 790
-      y: -576
+      x: 426
+      y: -529
     succ:
     - dest: Wait (1)
       condition: []
@@ -79,16 +79,16 @@ nodes:
     params:
       Duration: inf
     position:
-      x: 1109
-      y: -641
+      x: 745
+      y: -594
     succ: []
   startMember: InterpolateMove (5)
   endMember: Wait (1)
 - name: Group (1)
   base: ''
   position:
-    x: 1459
-    y: -665
+    x: 1095
+    y: -615
   succ:
   - dest: Group (2)
     endPrev: true
@@ -103,8 +103,8 @@ nodes:
       Delta: -6.00|0.000|0.000
       Time: 0.1
     position:
-      x: 1489
-      y: -645
+      x: 1125
+      y: -595
     succ:
     - dest: Wait (3)
       condition: []
@@ -113,8 +113,8 @@ nodes:
     params:
       Duration: inf
     position:
-      x: 1774
-      y: -480
+      x: 1410
+      y: -430
     succ: []
   startMember: InterpolateMove (6)
   endMember: Wait (3)
@@ -123,8 +123,8 @@ nodes:
   params:
     KeyCode: C
   position:
-    x: 89
-    y: 138
+    x: -275
+    y: 188
   succ:
   - dest: Group (3)
     condition: []
@@ -132,38 +132,38 @@ nodes:
   base: DoNothing
   params: {}
   position:
-    x: 1437
-    y: 353
+    x: 1057
+    y: 392
   succ: []
-- name: KeyUpEvent
+- name: KeyUpEvent (2)
   base: KeyUpEvent
   params:
     KeyCode: C
   position:
-    x: 112
-    y: 353
+    x: -277
+    y: 354
   succ: []
 - name: Group (3)
   base: ''
   position:
-    x: 438
-    y: 118
+    x: 74
+    y: 168
   succ:
   - dest: Group (3)
     condition: []
   - dest: DoNothing (2)
     endPrev: true
     condition:
-    - KeyUpEvent
+    - KeyUpEvent (2)
   members:
   - name: InstantiatePrefab
     base: InstantiatePrefab
     params:
       Prefab: bullet1
-      Parent: test1
+      Parent: player
     position:
-      x: 468
-      y: 138
+      x: 104
+      y: 188
     succ:
     - dest: Wait (4)
       condition: []
@@ -172,8 +172,86 @@ nodes:
     params:
       Duration: 0.01
     position:
-      x: 834
-      y: 216
+      x: 470
+      y: 266
     succ: []
   startMember: InstantiatePrefab
   endMember: Wait (4)
+- name: left
+  base: KeyDownEvent
+  params:
+    KeyCode: LeftArrow
+  position:
+    x: -305
+    y: 530
+  succ:
+  - dest: MoveConstant (2)
+    condition: []
+- name: MoveConstant (2)
+  base: MoveConstant
+  params:
+    Target: player
+    Velocity: -0.50|0.000|0.000
+    Duration: inf
+  position:
+    x: 89
+    y: 497
+  succ:
+  - dest: DoNothing (3)
+    endPrev: true
+    condition:
+    - leftup
+- name: DoNothing (3)
+  base: DoNothing
+  params: {}
+  position:
+    x: 530
+    y: 639
+  succ: []
+- name: leftup
+  base: KeyUpEvent
+  params:
+    KeyCode: LeftArrow
+  position:
+    x: -312
+    y: 604
+  succ: []
+- name: right
+  base: KeyDownEvent
+  params:
+    KeyCode: RightArrow
+  position:
+    x: -313
+    y: 726
+  succ:
+  - dest: MoveConstant (1)
+    condition: []
+- name: MoveConstant (1)
+  base: MoveConstant
+  params:
+    Target: player
+    Velocity: 0.50|0.000|0.000
+    Duration: inf
+  position:
+    x: 84
+    y: 694
+  succ:
+  - dest: DoNothing (4)
+    endPrev: true
+    condition:
+    - rightup
+- name: rightup
+  base: KeyUpEvent
+  params:
+    KeyCode: RightArrow
+  position:
+    x: -317
+    y: 797
+  succ: []
+- name: DoNothing (4)
+  base: DoNothing
+  params: {}
+  position:
+    x: 556
+    y: 744
+  succ: []

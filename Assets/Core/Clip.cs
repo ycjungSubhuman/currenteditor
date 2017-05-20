@@ -46,13 +46,15 @@ namespace Assets.Core
             UpdateTime();
         }
 
+        double lastTime = 0;
         List<Midi.MidiMessage> nonActive;
         public void UpdateTime()
         {
-            if (nonActive.Count() == 0)
+            if (nonActive.Count() == 0 || currTime < lastTime)
                 midiMessages = originalMidiMessages.Select(m => m);
             else
                 midiMessages = nonActive.Select(m => m);
+            lastTime = currTime;
             currTime = audio.time;
             nonActive = new List<Assets.Midi.MidiMessage>();
             foreach (var msg in midiMessages)

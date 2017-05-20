@@ -24,6 +24,7 @@ namespace Assets.Core.Handler
             if(parentName != "")
             {
                 g.transform.parent = GameObject.Find(parentName).transform;
+                g.transform.localPosition = Vector3.zero;
             }
             yield return null;
             yield break;

@@ -398,7 +398,7 @@ namespace Assets.Timeline
                     break;
             }
 
-            if(e.type == EventType.MouseUp || e.keyCode == KeyCode.Return)
+            if((e.type == EventType.MouseUp || e.keyCode == KeyCode.Return || e.keyCode == KeyCode.Tab) && e.button != 2)
             {
                 Save();
             }
