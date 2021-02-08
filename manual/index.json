@@ -1,0 +1,169 @@
+[
+{
+	"uri": "/_header/",
+	"title": "",
+	"tags": [],
+	"description": "",
+	"content": "CurrentWriter 사용가이드 "
+},
+{
+	"uri": "/",
+	"title": "",
+	"tags": [],
+	"description": "",
+	"content": "Home CurrentWriter 사용 가이드 페이지에 오신 것을 환영합니다. CurrentWriter는 Unity3D엔진을 위한 그래픽 프로그래밍 툴입니다. 이 툴은 당신이 만들 Unity3D 어플리케이션에서 발생하는 여러 이벤트들과, 각 이벤트를 처리하는 핸들러들을 쉽게 조합하고, 배치할 수 있도록 도와줍니다. 이 툴로 무엇을 할 수 있나요? 이 툴을 통해 작성된 그래프는 어플리케이션 실행시 스크립트로 컴파일 되어, Scene 내부에 있는 GameObject를 생성/조작/소멸시킬 수 있습니다. 즉, 기존 Unity3D에서 MonoBehaviour 스크립트를 작성하여 게임 내 객체들을 조작하는 것 대신, 이 툴이 제공하는 그래프 편집창에서 그래프를 그림으로써 어플리케이션 내에 있는 객체들을 이벤트에 따라 조작할 수 있습니다. 이 툴의 기초적인 사용 방법을 알고 싶어요 처음 시작하기 내가 선언할 수 있는 이벤트나 핸들러에는 어떤 종류가 있나요? 왼쪽의 탐색바에서 사용할 수 있는 이벤트와 핸들러를 살펴볼 수 있습니다. 또한 각 항목을 클릭하면 해당 구성요소에 대한 상세한 설명을 살펴볼 수 있습니다. 항상 세이브를 하실 때에는 편집 화면의 빈 공간을 한 번 클릭해 주세요 "
+},
+{
+	"uri": "/post/handler/absinterpolatescale/",
+	"title": "AbsInterpolateScale",
+	"tags": [],
+	"description": "",
+	"content": "Goal까지 Target의 localScale을 Time초 동안 Curve를 따라 조절합니다. 파라미터 Target : 움직일 GameObject의 이름(Hierarchy 창에서 확인 가능한 그것) Curve : EaseIn, EaseOut 중 하나(EaseIn은 서서히 빠르게, EaseOut은 서서히 느리게) Goal : 목표로 하는 localScale값 Time : 초단위. "
+},
+{
+	"uri": "/categories/",
+	"title": "Categories",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "/post/event/clipmidievent/",
+	"title": "ClipMidiEvent",
+	"tags": [],
+	"description": "",
+	"content": "ClipName을 가지는 clip이 포함하고 있는 midi파일과 현재 재생 시간으로부터, 현재 시간 에 대응되는 midi 메시지가 있는지 확인합니다. 간단하게 생각한다면 clip 재생 중 음이 재생되는 타이밍에 이 이벤트가 활성화 되는 것입니다. 파라미터 ClipName : 검사할 clip의 이름 Channel : 검사할 midi메시지의 channel. 이 값은 clip을 제작한 아티스트가 정하는 값을 듣고 설정하면 됩니다. (예 : 아티스트가 드럼 소리에 channel 9를 배정했다고 한다면, 드럼 소리를 감지할 때 이 필드에 9를 넣으면 됩니다.) MessageType : midi메시지의 타입. NOTE_ON, NOTE_OFF 중 하나로 설정해주세요. "
+},
+{
+	"uri": "/post/handler/donothing/",
+	"title": "DoNothing",
+	"tags": [],
+	"description": "",
+	"content": "아무 것도 하지 않습니다. 특정 조건을 검사할 타이밍에 사용할 더미 핸들러가 필요할 때 쓰거나, 다른 핸들러의 더미 종착점으로 사용합니다. 이 핸들러는 시작 하자마자 거의 바로 직후 끝납니다. "
+},
+{
+	"uri": "/post/event/",
+	"title": "Event",
+	"tags": [],
+	"description": "",
+	"content": "이벤트는 핸들러를 시작하거나, 핸들러 사이의 전환 조건으로 사용할 수 있습니다. 화면 위에 정의된 이벤트 노드와 핸들러를 연결하거나, 핸들러-핸들러 간의 Connection에서 Condition으로 추가하세요. "
+},
+{
+	"uri": "/post/handler/",
+	"title": "Handler",
+	"tags": [],
+	"description": "",
+	"content": "핸들러는 어떤 이벤트에 대하여 컨커런트하게, 정해진 시간 동안 실행될 처리 루틴을 말합니다. 각 핸들러가 수행될 시간은 핸들러의 종류마다 다르며, 일부는 사용자가 정하는 파라미터에 따라 달라지기도 합니다. 모든 핸들러는 이벤트와 마찬가지로 최상단에 이름을 적을 수 있는 창이 있습니다. 사용자가 원하는 이름을 붙여주세요. "
+},
+{
+	"uri": "/post/handler/instantiateprefab/",
+	"title": "InstantiatePrefab",
+	"tags": [],
+	"description": "",
+	"content": "Prefab을 Parent와 LocalPos를 설정하여 생성합니다. 이 핸들러는 실행되자마자 거의 바로 종료됩니다. 파라미터 Prefab : 생성할 Prefab의 이름. Assets/Resources 폴더를 기준으로 한다. LocalPos : 생성될 게임 오브젝트의 localPosition값 Parent : Parent로 삼을 GameObject의 이름(Hierarchy 창에서 확인 가능한 그것) "
+},
+{
+	"uri": "/post/handler/interpolatemove/",
+	"title": "InterpolateMove",
+	"tags": [],
+	"description": "",
+	"content": "(현재 위치+Delta)까지 Target의 position을 Time초 동안 Curve를 따라 조절합니다. 파라미터 Target : 움직일 GameObject의 이름(Hierarchy 창에서 확인 가능한 그것) Curve : EaseIn, EaseOut 중 하나(EaseIn은 서서히 빠르게, EaseOut은 서서히 느리게) Delta : 현재 위치로부터 상대적으로 움직일 거리. (x값)|(y값)|(z값)의 포맷으로 작성 Time : 초단위. "
+},
+{
+	"uri": "/post/handler/interpolatescale/",
+	"title": "InterpolateScale",
+	"tags": [],
+	"description": "",
+	"content": "(현재 scale+Delta)까지 Target의 localScale을 Time초 동안 Curve를 따라 조절합니다. 파라미터 Target : 움직일 GameObject의 이름(Hierarchy 창에서 확인 가능한 그것) Curve : EaseIn, EaseOut 중 하나(EaseIn은 서서히 빠르게, EaseOut은 서서히 느리게) Delta : 현재 위치로부터 상대적으로 움직일 scale차이. (x값)|(y값)|(z값)의 포맷으로 작성 Time : 초단위. "
+},
+{
+	"uri": "/post/event/keydownevent/",
+	"title": "KeyDownEvent",
+	"tags": [],
+	"description": "",
+	"content": "KeyCode의 key가 눌렸을 때 활성화됩니다. 파라미터 KeyCode : 검사할 key의 KeyCode. 선택할 수 있는 키의 리스트는 유니티 KeyCode클래스 문서를 참조해주세요. "
+},
+{
+	"uri": "/post/event/keyupevent/",
+	"title": "KeyUpEvent",
+	"tags": [],
+	"description": "",
+	"content": "KeyCode의 key가 떼어졌을 때 활성화됩니다. 파라미터 KeyCode : 검사할 key의 KeyCode. 선택할 수 있는 키의 리스트는 유니티 KeyCode클래스 문서를 참조해주세요. "
+},
+{
+	"uri": "/post/handler/moveconstant/",
+	"title": "MoveConstant",
+	"tags": [],
+	"description": "",
+	"content": "일정한 속력(Velocity)로 Target을 Duration만큼 움직입니다. 파라미터 Target : 움직일 GameObject의 이름(Hierarchy 창에서 확인 가능한 그것) Velocity : (x값)|(y값)|(z값) 포맷으로 작성 Duration : 초단위. inf를 적을 경우 무한정 "
+},
+{
+	"uri": "/post/handler/playclip/",
+	"title": "PlayClip",
+	"tags": [],
+	"description": "",
+	"content": "ClipName의 이름을 가지는 clip을 재생합니다. 이 핸들러는 clip이 재생되는 동안 유지됩니다. 반대로 이 핸들러가 어떤 이유에서 중지되면, 이 핸들러에 의해 재생되던 clip도 재생중지됩니다. 파라미터 ClipName : 재생할 clip의 이름. root파일에 명시되어 있다.(피실험자는 root파일에 대해서 신경 쓰지 않아도 된다.) Loop : true, false 중 하나의 값. true일 경우 이 핸들러는 무한정 지속되며, clip도 무한정 반복된다. "
+},
+{
+	"uri": "/post/",
+	"title": "Posts",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "/post/event/scenereadyevent/",
+	"title": "SceneReadyEvent",
+	"tags": [],
+	"description": "",
+	"content": "어플리케이션이 처음 시작되고, Scene이 초기화 된 뒤 단 한 번 활성화됩니다. 시작 후 바로 시작해야 하는 핸들러가 있다면 이 이벤트를 응용할 수 있습니다. 이 이벤트는 여러 번 정의하지 말아주세요. "
+},
+{
+	"uri": "/post/handler/sendmessageonce/",
+	"title": "SendMessageOnce",
+	"tags": [],
+	"description": "",
+	"content": "Target이 가지고 있는 MonoBehaviour에서 Message라는 이름을 가지는 함수를 Param 인자를 주어 호출합니다. 이 함수는 string 하나를 받는 함수여야 합니다. 이 핸들러는 실행되자마자 거의 바로 종료됩니다. 파라미터 Target : 움직일 GameObject의 이름(Hierarchy 창에서 확인 가능한 그것) Message : 호출할 메서드의 이름 Param : 메서드로 전달할 string "
+},
+{
+	"uri": "/tags/",
+	"title": "Tags",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "/post/handler/trigger/",
+	"title": "Trigger",
+	"tags": [],
+	"description": "",
+	"content": "Name의 이름을 가지는 변수를 하나 생성하고, 활성화 합니다. 이 변수는 TriggeredEvent이벤트를 통해 검사할 수 있습니다. 이 변수는 한 번 TriggeredEvent에서 감지되면 바로 비활성화됩니다. 이 핸들러는 실행되자마자 거의 바로 종료됩니다. 파라미터 Name : Trigger로 생성할 변수의 이름. TriggeredEvent에서 사용됩니다. "
+},
+{
+	"uri": "/post/event/triggeredevent/",
+	"title": "TriggeredEvent",
+	"tags": [],
+	"description": "",
+	"content": "Trigger 핸들러에 의해 Name이라는 이름을 가지는 변수가 활성화 되었는지 체크합니다. 파라미터 Name : 변수의 이름. Trigger 핸들러 참조. "
+},
+{
+	"uri": "/post/handler/wait/",
+	"title": "Wait",
+	"tags": [],
+	"description": "",
+	"content": "Duration동안 기다립니다. 주로 핸들러 사이의 딜레이를 만들거나, 다른 조건을 무한정 기다리는데 사용합니다. 파라미터 Duration : 초단위. inf를 적을 경우 무한정 "
+},
+{
+	"uri": "/post/examples/",
+	"title": "예시",
+	"tags": [],
+	"description": "",
+	"content": "예시 CurrentWriter의 사용 예시들을 소개합니다. 왼쪽/오른쪽 움직이기 왼쪽 화살표를 누르는 동안 player 게임오브젝트가 왼쪽으로 0.50의 속력으로 꾸준히 움직입니다. 오른쪽 화살표를 누르는 동안 오른쪽으로 0.50의 속력으로 꾸준히 움직입니다. 그룹 활용 예시 A 키를 누르는 동안 0.1초 간격으로 bullet1을 player 밑에 생성합니다. 클립 활용 예시 Scene이 처음 초기화 되었을 때, demo_bass_1 클립을 재생하기 시작합니다. 이 클립의 재생이 끝나면 다시 처음부터 재생합니다. 만약 이 클립의 재생이 끝났을 때, TriggeredEvent1이 만족되었다면, demo_bass_1의 재생을 중지하고 demo_bass_2의 재생을 시작합니다. Wait 활용 예시 Scene이 처음 초기화 된 이후 1회에 한해서, v키가 눌렸을 때 player 게임 오브젝트를 오른쪽으로 0.1만큼 부드럽게 움직입니다. "
+},
+{
+	"uri": "/post/gettingstarted/",
+	"title": "처음 시작하기",
+	"tags": [],
+	"description": "",
+	"content": "CurrentWriter의 기본 사용법 CurrentWriter는 여러 개의 이벤트 노드와, 핸들러 노드들을 화면 상에 배치하고, 연결하여 사용합니다. 다음은 몇 가지 기본 기능입니다. 노드/커넥션 추가 빈 공간에 오른쪽 클릭하고, 에디터 화면에 노드를 추가합니다 각 노드의 파라미터를 키보드를 통해 편집할 수 있습니다. 각 파라미터의 상세한 의미는 문서를 참조해주세요 노드의 빈 공간에 마우스 왼쪽 드래그를 해서 노드를 움직일 수 있습니다. 각 노드나 Connection에 오른쪽 클릭을 하면 삭제하는 메뉴에 접근할 수 있습니다. Connection으로 핸들러 간 흐름 조작 한 노드의 시작/끝을 클릭하고, 다른 노드의 끝/시작을 클릭하여 Connection을 추가합니다. 이 때 자기 자신과도 Connection을 만들 수 있습니다. 이벤트의 끝에 핸들러의 시작을 연결한다면, 해당 이벤트가 발생하면 무조건 연결된 핸들러를 실행한다는 것을 의미합니다. 핸들러A의 끝과 핸들러B의 시작 사이에 아무 Condition도 없는 Connection이 있다면(기본값), 핸들러A가 끝난 후 바로 핸들러 B를 실행한다는 의미입니다. 시작지점에 아무 것도 연결되지 않은 핸들러는 실행되지 않습니다. 각 Connection에 오른쪽 클릭을 하면 Condition을 추가하는 메뉴에 접근할 수 있습니다. 추가할 수 있는 Condition은 현재 화면에 정의된 이벤트 중에서만 선택할 수 있습니다. 핸들러A의 끝과 핸들러B의 시작 사이에 ConditionA가 있는 Connection이 있다면, 핸들러A 실행 중 ConditionA가 만족되었을 경우 핸들러 B를 새로 실행한다는 의미입니다. 이 때 &amp;ldquo;stop previous on transition&amp;rdquo;이 꺼져있었다면(기본값 꺼짐) 핸들러 A는 계속 실행됩니다. 각 Connection에 오른쪽 클릭을 하면 &amp;ldquo;Stop previous on transition&amp;rdquo;을 켜고 끌 수 있는 메뉴에 접근할 수 있습니다. 핸들러A로부터 B로 이어지는 Connection에 이 옵션이 켜져 있을 경우, 해당 Connection에 설정된 Condition에 의해 새로운 핸들러B를 시작할 때, A를 중지시킨다는 의미입니다. 이런 식으로 A가 중지될 때, A로부터 이어지는, 같은 Condition을 가지는 다른 Connection이 있을 경우, 그 Connection은 유효하게 작동합니다. A가 이 옵션에 의해서 중지되었을 경우, A로부터 이어지는 아무 Condition도 없는 Connection은 무시됩니다. 이 값은 Condition이 있는 Connection에 대해서만 유효하게 동작합니다. Group을 만들어 여러 핸들러를 하나처럼 생각하기 여러 핸들러를 선택하고, 선택된 노드 중 하나에 오른쪽 클릭을 하면 그룹화 메뉴에 접근할 수 있습니다. Group된 핸들러는 하나의 핸들러처럼 행동합니다.(예 : stop previous on transition에 의해 중지될 때 Group 내부 진행 상황과는 상관 없이 Group이 한 번에 중지됩니다.) Group은 아무 Condition이 없는 Connection으로 직선 형태로 연결된 핸들러들로만 만들 수 있습니다.(조건이 만족되지 않을 시 메뉴 비활성화) Group에 오른쪽 클릭해 Degroup메뉴에 접근할 수 있습니다. 한 번 Group된 노드들 내부의 연결은 Degroup하기 전까지는 바꿀 수 없습니다. 파라미터는 수정 가능합니다. 그 외&amp;hellip; 마우스 횔을 클릭하고 드래그하여 편집창이 보여주는 화면 자체를 움직일 수 있습니다. 넓은 그래프를 탐색할 때 사용하세요. 프로그래밍에 사용한 예시 구체적인 사용 예시 보기 "
+}]

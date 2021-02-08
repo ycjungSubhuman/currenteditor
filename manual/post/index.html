@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.20.7" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
+
+    <title>Posts :: CurrentWrite Documentation Site</title>
+    <link href="/css/nucleus.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/hybrid.css" rel="stylesheet">
+    <link href="/css/featherlight.min.css" rel="stylesheet">
+    <link href="/css/horsey.css" rel="stylesheet">
+    <link href="/css/theme.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/jquery-2.x.min.js"></script>
+    <style type="text/css">
+      :root #header + #content > #left > #rlblock_left {
+        display:none !important;
+      }
+    </style>
+
+    
+
+    
+
+  </head>
+  <body class="" data-url="/post/">
+    
+<nav id="sidebar" class="">
+  <div id="header-wrapper">
+    <div id="header">
+       
+	<p>CurrentWriter 사용가이드</p>
+ 
+
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fa fa-search"></i></label>
+    <input data-search-input id="search-by" type="text" placeholder="Search...">
+    <span data-search-clear=""><i class="fa fa-close"></i></span>
+</div>
+<script type="text/javascript" src="/js/lunr.min.js"></script>
+<script type="text/javascript" src="/js/horsey.js"></script>
+<script type="text/javascript">
+    var baseurl = "\/";
+</script>
+<script type="text/javascript" src="/js/search.js"></script>
+
+    
+  </div>
+
+  <div class="highlightable">
+    <ul class="topics">
+        
+            <li data-nav-id="/" class="dd-item">
+            <a href="/"><i class="fa fa-fw fa-home"></i></a>
+            </li>
+        
+
+        
+        
+        
+        
+        
+            
+    
+    
+    
+    
+        <li data-nav-id="/post/event/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/event/">
+                <span>Event</span>
+                
+                    
+                        <i class="fa fa-angle-right fa-lg category-icon"></i>
+                    
+                
+                
+            </a>
+            
+            
+            
+                <ul>
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/event/clipmidievent/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/event/clipmidievent/">
+                <span>ClipMidiEvent</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/event/keydownevent/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/event/keydownevent/">
+                <span>KeyDownEvent</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/event/keyupevent/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/event/keyupevent/">
+                <span>KeyUpEvent</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/event/scenereadyevent/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/event/scenereadyevent/">
+                <span>SceneReadyEvent</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/event/triggeredevent/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/event/triggeredevent/">
+                <span>TriggeredEvent</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                </ul>
+             
+        </li>
+    
+
+        
+            
+    
+    
+    
+    
+        <li data-nav-id="/post/handler/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/handler/">
+                <span>Handler</span>
+                
+                    
+                        <i class="fa fa-angle-right fa-lg category-icon"></i>
+                    
+                
+                
+            </a>
+            
+            
+            
+                <ul>
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/handler/absinterpolatescale/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/handler/absinterpolatescale/">
+                <span>AbsInterpolateScale</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/handler/donothing/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/handler/donothing/">
+                <span>DoNothing</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/handler/instantiateprefab/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/handler/instantiateprefab/">
+                <span>InstantiatePrefab</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/handler/interpolatemove/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/handler/interpolatemove/">
+                <span>InterpolateMove</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/handler/interpolatescale/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/handler/interpolatescale/">
+                <span>InterpolateScale</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/handler/moveconstant/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/handler/moveconstant/">
+                <span>MoveConstant</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/handler/playclip/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/handler/playclip/">
+                <span>PlayClip</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/handler/sendmessageonce/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/handler/sendmessageonce/">
+                <span>SendMessageOnce</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/handler/trigger/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/handler/trigger/">
+                <span>Trigger</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/handler/wait/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/handler/wait/">
+                <span>Wait</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                </ul>
+             
+        </li>
+    
+
+        
+            
+    
+    
+    
+    
+        <li data-nav-id="/post/gettingstarted/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/gettingstarted/">
+                <span>처음 시작하기</span>
+                
+                    
+                        <i class="fa fa-angle-right fa-lg category-icon"></i>
+                    
+                
+                
+            </a>
+            
+            
+            
+                <ul>
+                
+                    
+    
+    
+    
+    
+        <li data-nav-id="/post/examples/" class="dd-item 
+         
+        
+        "
+        >
+            <a href="/post/examples/">
+                <span>예시</span>
+                
+                
+            </a>
+            
+            
+            
+        </li>
+    
+
+                
+                </ul>
+             
+        </li>
+    
+
+        
+
+        
+
+        
+        
+        
+    </ul>
+    
+     
+    <section id="footer">
+      
+    </section>
+  </div>
+</nav>
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+        
+          <div id="top-bar">
+            
+
+            <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                <span id="sidebar-toggle-span">
+                  <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                    <i class="fa fa-bars"></i>
+                  </a>
+                </span>
+                <span id="toc-menu"><a href=""><i class="fa fa-list-alt"></i></a></span>
+                <a href="/">
+                  <span class="fa fa-arrow-circle-right" style="font-size:larger" aria-hidden="true"></span>
+                  CurrentWrite Documentation Site
+                </a>
+                
+                 > Posts
+            </div>
+            <div class="progress">
+    <div class="wrapper">
+
+    </div>
+</div>
+
+          </div>
+        
+        
+        <div id="body-inner">
+          
+            <h1>Posts</h1>
+          
+
+
+
+
+
+<div class="extra-pagination inner">
+<nav class="pagination" role="navigation">
+	
+	<span class="page-number">Page 1 on 2</span>
+	
+	    <a class="older-posts" href="/post/page/2/">Previous Pages &rarr;</a>
+	
+</nav>
+
+</div>
+
+
+   <article class="post post">
+    <header class="post-header">
+        <h2 class="post-title"><a href="/post/handler/absinterpolatescale/">AbsInterpolateScale</a></h2>
+    </header>
+    <section class="post-excerpt">
+        <p> Goal까지 Target의 localScale을 Time초 동안 Curve를 따라 조절합니다.
+파라미터  Target : 움직일 GameObject의 이름(Hierarchy 창에서 확인 가능한 그것) Curve : EaseIn, EaseOut 중 하나(EaseIn은 서서히 빠르게, EaseOut은 서서히 느리게) Goal : 목표로 하는 localScale값 Time : 초단위.   <a class="read-more" href="/post/handler/absinterpolatescale/">&raquo;</a></p>
+    </section>
+    <footer class=" footline" >
+         
+        
+
+        
+        
+
+    </footer>
+</article>
+
+
+
+
+
+   <article class="post post">
+    <header class="post-header">
+        <h2 class="post-title"><a href="/post/event/clipmidievent/">ClipMidiEvent</a></h2>
+    </header>
+    <section class="post-excerpt">
+        <p>ClipName을 가지는 clip이 포함하고 있는 midi파일과 현재 재생 시간으로부터, 현재 시간 에 대응되는 midi 메시지가 있는지 확인합니다. 간단하게 생각한다면 clip 재생 중 음이 재생되는 타이밍에 이 이벤트가 활성화 되는 것입니다.
+파라미터  ClipName : 검사할 clip의 이름 Channel : 검사할 midi메시지의 channel. 이 값은 clip을 제작한 아티스트가 정하는 값을 듣고 설정하면 됩니다. (예 : 아티스트가 드럼 소리에 channel 9를 배정했다고 한다면, 드럼 소리를 감지할 때 이 필드에 9를 넣으면 됩니다. <a class="read-more" href="/post/event/clipmidievent/">&raquo;</a></p>
+    </section>
+    <footer class=" footline" >
+         
+        
+
+        
+        
+
+    </footer>
+</article>
+
+
+
+
+
+   <article class="post post">
+    <header class="post-header">
+        <h2 class="post-title"><a href="/post/handler/donothing/">DoNothing</a></h2>
+    </header>
+    <section class="post-excerpt">
+        <p>아무 것도 하지 않습니다. 특정 조건을 검사할 타이밍에 사용할 더미 핸들러가 필요할 때 쓰거나, 다른 핸들러의 더미 종착점으로 사용합니다. 이 핸들러는 시작 하자마자 거의 바로 직후 끝납니다. <a class="read-more" href="/post/handler/donothing/">&raquo;</a></p>
+    </section>
+    <footer class=" footline" >
+         
+        
+
+        
+        
+
+    </footer>
+</article>
+
+
+
+
+
+   <article class="post post">
+    <header class="post-header">
+        <h2 class="post-title"><a href="/post/event/">Event</a></h2>
+    </header>
+    <section class="post-excerpt">
+        <p>이벤트는 핸들러를 시작하거나, 핸들러 사이의 전환 조건으로 사용할 수 있습니다. 화면 위에 정의된 이벤트 노드와 핸들러를 연결하거나, 핸들러-핸들러 간의 Connection에서 Condition으로 추가하세요. <a class="read-more" href="/post/event/">&raquo;</a></p>
+    </section>
+    <footer class=" footline" >
+         
+        
+
+        
+        
+
+    </footer>
+</article>
+
+
+
+
+
+   <article class="post post">
+    <header class="post-header">
+        <h2 class="post-title"><a href="/post/handler/">Handler</a></h2>
+    </header>
+    <section class="post-excerpt">
+        <p>핸들러는 어떤 이벤트에 대하여 컨커런트하게, 정해진 시간 동안 실행될 처리 루틴을 말합니다. 각 핸들러가 수행될 시간은 핸들러의 종류마다 다르며, 일부는 사용자가 정하는 파라미터에 따라 달라지기도 합니다.
+모든 핸들러는 이벤트와 마찬가지로 최상단에 이름을 적을 수 있는 창이 있습니다. 사용자가 원하는 이름을 붙여주세요. <a class="read-more" href="/post/handler/">&raquo;</a></p>
+    </section>
+    <footer class=" footline" >
+         
+        
+
+        
+        
+
+    </footer>
+</article>
+
+
+
+
+
+   <article class="post post">
+    <header class="post-header">
+        <h2 class="post-title"><a href="/post/handler/instantiateprefab/">InstantiatePrefab</a></h2>
+    </header>
+    <section class="post-excerpt">
+        <p> Prefab을 Parent와 LocalPos를 설정하여 생성합니다.
+이 핸들러는 실행되자마자 거의 바로 종료됩니다.
+파라미터  Prefab : 생성할 Prefab의 이름. Assets/Resources 폴더를 기준으로 한다. LocalPos : 생성될 게임 오브젝트의 localPosition값 Parent : Parent로 삼을 GameObject의 이름(Hierarchy 창에서 확인 가능한 그것)   <a class="read-more" href="/post/handler/instantiateprefab/">&raquo;</a></p>
+    </section>
+    <footer class=" footline" >
+         
+        
+
+        
+        
+
+    </footer>
+</article>
+
+
+
+
+
+   <article class="post post">
+    <header class="post-header">
+        <h2 class="post-title"><a href="/post/handler/interpolatemove/">InterpolateMove</a></h2>
+    </header>
+    <section class="post-excerpt">
+        <p> (현재 위치+Delta)까지 Target의 position을 Time초 동안 Curve를 따라 조절합니다.
+파라미터  Target : 움직일 GameObject의 이름(Hierarchy 창에서 확인 가능한 그것) Curve : EaseIn, EaseOut 중 하나(EaseIn은 서서히 빠르게, EaseOut은 서서히 느리게) Delta : 현재 위치로부터 상대적으로 움직일 거리. (x값)|(y값)|(z값)의 포맷으로 작성 Time : 초단위.   <a class="read-more" href="/post/handler/interpolatemove/">&raquo;</a></p>
+    </section>
+    <footer class=" footline" >
+         
+        
+
+        
+        
+
+    </footer>
+</article>
+
+
+
+
+
+   <article class="post post">
+    <header class="post-header">
+        <h2 class="post-title"><a href="/post/handler/interpolatescale/">InterpolateScale</a></h2>
+    </header>
+    <section class="post-excerpt">
+        <p> (현재 scale+Delta)까지 Target의 localScale을 Time초 동안 Curve를 따라 조절합니다.
+파라미터  Target : 움직일 GameObject의 이름(Hierarchy 창에서 확인 가능한 그것) Curve : EaseIn, EaseOut 중 하나(EaseIn은 서서히 빠르게, EaseOut은 서서히 느리게) Delta : 현재 위치로부터 상대적으로 움직일 scale차이. (x값)|(y값)|(z값)의 포맷으로 작성 Time : 초단위.   <a class="read-more" href="/post/handler/interpolatescale/">&raquo;</a></p>
+    </section>
+    <footer class=" footline" >
+         
+        
+
+        
+        
+
+    </footer>
+</article>
+
+
+
+
+
+   <article class="post post">
+    <header class="post-header">
+        <h2 class="post-title"><a href="/post/event/keydownevent/">KeyDownEvent</a></h2>
+    </header>
+    <section class="post-excerpt">
+        <p> KeyCode의 key가 눌렸을 때 활성화됩니다.
+파라미터  KeyCode : 검사할 key의 KeyCode. 선택할 수 있는 키의 리스트는 유니티 KeyCode클래스 문서를 참조해주세요.   <a class="read-more" href="/post/event/keydownevent/">&raquo;</a></p>
+    </section>
+    <footer class=" footline" >
+         
+        
+
+        
+        
+
+    </footer>
+</article>
+
+
+
+
+
+   <article class="post post">
+    <header class="post-header">
+        <h2 class="post-title"><a href="/post/event/keyupevent/">KeyUpEvent</a></h2>
+    </header>
+    <section class="post-excerpt">
+        <p> KeyCode의 key가 떼어졌을 때 활성화됩니다.
+파라미터  KeyCode : 검사할 key의 KeyCode. 선택할 수 있는 키의 리스트는 유니티 KeyCode클래스 문서를 참조해주세요.   <a class="read-more" href="/post/event/keyupevent/">&raquo;</a></p>
+    </section>
+    <footer class=" footline" >
+         
+        
+
+        
+        
+
+    </footer>
+</article>
+
+
+
+
+
+
+<div style="margin-bottom:2rem"></div>
+
+<nav class="pagination" role="navigation">
+	
+	<span class="page-number">Page 1 on 2</span>
+	
+	    <a class="older-posts" href="/post/page/2/">Previous Pages &rarr;</a>
+	
+</nav>
+
+
+
+
+
+
+      </div>
+    </div>
+
+    
+ 
+    
+
+    <div id="navigation">
+        
+        
+        
+            
+            
+            
+                
+                    
+                
+                
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+            
+        
+        
+            
+            
+            
+                
+                    
+                
+                
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+            
+        
+        
+            
+            
+            
+                
+                    
+                
+                
+                
+                    
+            
+            
+                
+                    
+                
+                
+                
+            
+        
+                
+            
+        
+          
+
+        
+
+
+        
+        
+    </div>
+
+    </section>
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/js/clipboard.min.js"></script>
+    <script src="/js/jquery.sticky-kit.min.js"></script>
+    <script src="/js/featherlight.min.js"></script>
+    <script src="/js/html5shiv-printshiv.min.js"></script>
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/js/modernizr.custom.71422.js"></script>
+    <script src="/js/learn.js"></script>
+    <script src="/js/hugo-learn.js"></script>
+
+    
+    <link href="/mermaid/mermaid.css" type="text/css" rel="stylesheet"/>
+    <script src="/mermaid/mermaid.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    
+
+    
+
+  </body>
+</html>
+
