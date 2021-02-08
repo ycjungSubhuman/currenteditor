@@ -2,7 +2,7 @@
 
 A visual programming tool for Unity3D.
 
-The main concept of this project is to think **every** code in a project as a coroutine.
+The main concept of this project is to think **every** code in a project as a combination of coroutines.
 I created this tool to program a game that builds a strong relation between visual and audio events. (i.e., 140 by Jeppe Carlsen)
 
 ## Usage
